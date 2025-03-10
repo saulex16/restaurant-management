@@ -9,6 +9,6 @@ public class CreateRestaurantDto {
     private String name;
     private String managerName;
     private Double vipTablePrice;
-    private int kitchenLimit;
+    private Integer kitchenLimit;
     private List<String> waiterNames;
 }

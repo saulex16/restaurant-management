@@ -1,20 +1,21 @@
 package at.technikum_wien.restaurant_management.controller;
 
+import at.technikum_wien.restaurant_management.dtos.AddTableDto;
 import at.technikum_wien.restaurant_management.dtos.CreateRestaurantDto;
+import at.technikum_wien.restaurant_management.dtos.VipTablePriceDto;
 import at.technikum_wien.restaurant_management.model.Restaurant;
 import at.technikum_wien.restaurant_management.service.interfaces.RestaurantService;
-import at.technikum_wien.restaurant_management.vnd_type.BasicTableVndType;
-import at.technikum_wien.restaurant_management.vnd_type.VipTableVndType;
+import at.technikum_wien.restaurant_management.vnd_type.VndType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/restaurants")
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
-    private final VipTableVndType vipTableVndType = new VipTableVndType();
-    private final basicTableVndType basicTableVndType = new BasicTableVndType();
 
     @Autowired
     public RestaurantController(RestaurantService restaurantService) {
@@ -23,24 +24,44 @@ public class RestaurantController {
 
     @GetMapping(path = "/{id}")
     public Restaurant getRestaurant(@PathVariable Long id){
-
+        return restaurantService.getRestaurant(id);
     }
 
     @PostMapping(path = "/")
-    public void createRestaurant(
+    public long createRestaurant(
             @RequestBody CreateRestaurantDto createRestaurantDto
     ) {
-
-        // strategy = strategyDispatcher.getStrategy(restaurantForm.getType())
-        // strategy.addTable(restaurantForm)
-
-        // service.createVipTable(..., form.getPrice())
-        // tableForm -> (vipTableForm, basicTableForm)
-
-        // ValidationUtils.validate(dto, PostGroup.class);
+        Restaurant restaurant = restaurantService.createRestaurant(
+                createRestaurantDto.getName(),
+                createRestaurantDto.getManagerName(),
+                createRestaurantDto.getKitchenLimit(),
+                createRestaurantDto.getWaiterNames(),
+                Optional.ofNullable(createRestaurantDto.getVipTablePrice())
+        );
+        return restaurant.getId();
     }
 
+    @PostMapping(path = "/waiters/{name}")
+    public long addWaiter(@PathVariable String name) {
+        long waiterId = restaurantService.addWaiter(name);
+        return waiterId;
+    }
 
-    @PostMapping(path = "/tables/{name}", consumes = ba
+    @PutMapping(path = "/tables/price", consumes = VndType.VIP_TABLE_VND_TYPE)
+    public void setVipTablePrice(@RequestBody VipTablePriceDto vipTablePriceDto) {
+        restaurantService.setVipTablePrice(vipTablePriceDto.getVipTablePrice());
+    }
+
+    @PostMapping(path = "/tables", consumes = VndType.BASIC_TABLE_VND_TYPE)
+    public long createBasicTable(@RequestBody AddTableDto addTableDto) {
+        long tableId = restaurantService.addBasicTable(addTableDto.getTableName());
+        return tableId;
+    }
+
+    @PostMapping(path = "/tables", consumes = VndType.VIP_TABLE_VND_TYPE)
+    public long createVipTable(@RequestBody AddTableDto addTableDto) {
+        long tableId = restaurantService.addVipTable(addTableDto.getTableName());
+        return tableId;
+    }
 
 }
