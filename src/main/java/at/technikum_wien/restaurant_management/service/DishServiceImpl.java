@@ -14,12 +14,16 @@ import java.util.Optional;
 @Service
 public class DishServiceImpl implements DishService {
 
-    @Autowired
     private final DishRepository dishRepository;
 
+    @Autowired
+    public DishServiceImpl(DishRepository dishRepository) {
+        this.dishRepository = dishRepository;
+    }
+
     @Override
-    public void createDish(long restaurantId, List<Ingredient> baseIngredients, List<Ingredient> optionalIngredients, int durationInMinutes, double markup) {
-        dishRepository.createDish(restaurantId, baseIngredients, optionalIngredients, durationInMinutes, markup);
+    public Dish createDish(long restaurantId, String name, List<Ingredient> baseIngredients, List<Ingredient> optionalIngredients, int durationInMinutes, double markup) {
+        return dishRepository.createDish(restaurantId, name, baseIngredients, optionalIngredients, durationInMinutes, markup);
     }
 
     @Override

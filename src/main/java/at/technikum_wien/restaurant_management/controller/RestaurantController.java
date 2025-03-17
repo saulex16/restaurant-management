@@ -5,6 +5,7 @@ import at.technikum_wien.restaurant_management.dtos.CreateRestaurantDto;
 import at.technikum_wien.restaurant_management.dtos.VipTablePriceDto;
 import at.technikum_wien.restaurant_management.model.Restaurant;
 import at.technikum_wien.restaurant_management.service.interfaces.RestaurantService;
+import at.technikum_wien.restaurant_management.utils.Endpoints;
 import at.technikum_wien.restaurant_management.vnd_type.VndType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/restaurants")
+@RequestMapping(Endpoints.RESTAURANTS)
 public class RestaurantController {
 
     private final RestaurantService restaurantService;

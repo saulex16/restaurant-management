@@ -1,7 +1,7 @@
 package at.technikum_wien.restaurant_management.model.dishes;
 import at.technikum_wien.restaurant_management.model.Ingredient;
-import at.technikum_wien.restaurant_management.model.Menu;
 
+import at.technikum_wien.restaurant_management.model.Restaurant;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,16 +44,21 @@ public class Dish implements OrderableDish {
     private double markup; // The added price to ingredients costs
 
     @ManyToOne
-    @JoinColumn(name = "menu_id", nullable = false)
-    private Menu menu;
+    @JoinColumn(name = "restaurant", nullable = false)
+    private Restaurant restaurant;
 
     @OneToMany(mappedBy = "dish")
     private List<OrderedDish> orderedDishes;
 
-    public Dish(String name, int duration, double markup, List<Ingredient> optionalIngredients, List<Ingredient> baseIngredients){
+    public Dish() { }
+
+    public Dish(String name, int duration, double markup, List<Ingredient> optionalIngredients, List<Ingredient> baseIngredients, Restaurant restaurant) {
         this.name = name;
-        this.durationInMinutes = duration;
+        this.baseIngredients = baseIngredients;
+        this.optionalIngredients = optionalIngredients;
         this.markup = markup;
+        this.durationInMinutes = duration;
+        this.restaurant = restaurant;
     }
 
     @Override
