@@ -1,6 +1,7 @@
-package at.technikum_wien.restaurant_management.model;
+package at.technikum_wien.restaurant_management.model.dishes;
+import at.technikum_wien.restaurant_management.model.Ingredient;
+import at.technikum_wien.restaurant_management.model.Menu;
 
-import at.technikum_wien.restaurant_management.model.interfaces.OrderableDish;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,9 +47,22 @@ public class Dish implements OrderableDish {
     @JoinColumn(name = "menu_id", nullable = false)
     private Menu menu;
 
+    @OneToMany(mappedBy = "dish")
+    private List<OrderedDish> orderedDishes;
+
     public Dish(String name, int duration, double markup, List<Ingredient> optionalIngredients, List<Ingredient> baseIngredients){
         this.name = name;
         this.durationInMinutes = duration;
         this.markup = markup;
+    }
+
+    @Override
+    public List<Ingredient> getIngredients() {
+        return List.copyOf(baseIngredients);
+    }
+
+    @Override
+    public Dish getDish() {
+        return this;
     }
 }

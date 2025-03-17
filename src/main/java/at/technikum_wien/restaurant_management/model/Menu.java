@@ -1,5 +1,6 @@
 package at.technikum_wien.restaurant_management.model;
 
+import at.technikum_wien.restaurant_management.model.dishes.Dish;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

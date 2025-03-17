@@ -1,5 +1,6 @@
 package at.technikum_wien.restaurant_management.model.tables;
 
+import at.technikum_wien.restaurant_management.model.orders.Order;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +26,9 @@ public class Table {
 
     @Column(name = "price", nullable = false)
     private double price;
+
+    @OneToOne(mappedBy = "order")
+    private Order order;
 
     public Table() {}
 
