@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DishService {
-    void createDish(long restaurantId, List<Ingredient> baseIngredients, List<Ingredient> optionalIngredients, int durationInMinutes, double markup);
+    Dish createDish(long restaurantId, List<Ingredient> baseIngredients, List<Ingredient> optionalIngredients, int durationInMinutes, double markup);
     Optional<Dish> getDishById(long restaurantId, Long id);
     Optional<Menu> getMenu(long restaurantId);
     Dish updateDish(long restaurantId, Dish dish);
