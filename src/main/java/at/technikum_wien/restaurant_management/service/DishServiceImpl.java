@@ -22,8 +22,8 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public Dish createDish(long restaurantId, List<Ingredient> baseIngredients, List<Ingredient> optionalIngredients, int durationInMinutes, double markup) {
-        return dishRepository.createDish(restaurantId, baseIngredients, optionalIngredients, durationInMinutes, markup);
+    public Dish createDish(long restaurantId, String name, List<Ingredient> baseIngredients, List<Ingredient> optionalIngredients, int durationInMinutes, double markup) {
+        return dishRepository.createDish(restaurantId, name, baseIngredients, optionalIngredients, durationInMinutes, markup);
     }
 
     @Override

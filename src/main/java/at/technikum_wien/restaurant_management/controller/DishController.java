@@ -26,11 +26,10 @@ public class DishController {
 
     @PostMapping()
     public ResponseEntity<Dish> createDish(@PathVariable final Long restaurantId, @RequestBody DishDto dishDto) {
-        Dish dish = dishService.createDish(restaurantId,
+        Dish dish = dishService.createDish(restaurantId, dishDto.getName(),
                 dishDto.getBaseIngredients(),
                 dishDto.getOptionalIngredients(),
-                dishDto.getDurationInMinutes(),
-                dishDto.getMarkup());
+                dishDto.getDurationInMinutes(), dishDto.getMarkup());
 
         return ResponseEntity.ok(dish);
     }
