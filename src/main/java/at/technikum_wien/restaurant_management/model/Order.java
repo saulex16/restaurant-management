@@ -2,9 +2,11 @@ package at.technikum_wien.restaurant_management.model;
 
 import at.technikum_wien.restaurant_management.model.interfaces.OrderableDish;
 import at.technikum_wien.restaurant_management.model.tables.Table;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 
 import java.util.List;
+
 
 @Getter
 public class Order {
