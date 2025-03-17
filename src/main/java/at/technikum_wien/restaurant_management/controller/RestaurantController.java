@@ -41,26 +41,34 @@ public class RestaurantController {
         return restaurant.getId();
     }
 
-    @PostMapping(path = "/waiters/{name}")
-    public long addWaiter(@PathVariable String name) {
-        long waiterId = restaurantService.addWaiter(name);
+    @PostMapping(path = "/{id}/waiters/{name}")
+    public long addWaiter(
+            @PathVariable Long id,
+            @PathVariable String name) {
+        long waiterId = restaurantService.addWaiter(id, name);
         return waiterId;
     }
 
-    @PutMapping(path = "/tables/price", consumes = VndType.VIP_TABLE_VND_TYPE)
-    public void setVipTablePrice(@RequestBody VipTablePriceDto vipTablePriceDto) {
-        restaurantService.setVipTablePrice(vipTablePriceDto.getVipTablePrice());
+    @PutMapping(path = "/{id}/tables/price", consumes = VndType.VIP_TABLE_VND_TYPE)
+    public void setVipTablePrice(
+            @PathVariable Long id,
+            @RequestBody VipTablePriceDto vipTablePriceDto) {
+        restaurantService.setVipTablePrice(id, vipTablePriceDto.getVipTablePrice());
     }
 
-    @PostMapping(path = "/tables", consumes = VndType.BASIC_TABLE_VND_TYPE)
-    public long createBasicTable(@RequestBody AddTableDto addTableDto) {
-        long tableId = restaurantService.addBasicTable(addTableDto.getTableName());
+    @PostMapping(path = "/{id}/tables", consumes = VndType.BASIC_TABLE_VND_TYPE)
+    public long createBasicTable(
+            @PathVariable Long id,
+            @RequestBody AddTableDto addTableDto) {
+        long tableId = restaurantService.addBasicTable(id, addTableDto.getTableName());
         return tableId;
     }
 
-    @PostMapping(path = "/tables", consumes = VndType.VIP_TABLE_VND_TYPE)
-    public long createVipTable(@RequestBody AddTableDto addTableDto) {
-        long tableId = restaurantService.addVipTable(addTableDto.getTableName());
+    @PostMapping(path = "/{id}/tables", consumes = VndType.VIP_TABLE_VND_TYPE)
+    public long createVipTable(
+            @PathVariable Long id,
+            @RequestBody AddTableDto addTableDto) {
+        long tableId = restaurantService.addVipTable(id, addTableDto.getTableName());
         return tableId;
     }
 

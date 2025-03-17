@@ -23,10 +23,14 @@ public class Table {
     @Column(name = "table_type", nullable = false)
     private TableType tableType;
 
+    @Column(name = "price", nullable = false)
+    private double price;
+
     public Table() {}
 
-    public Table(String name, TableType tableType) {
+    public Table(String name, TableType tableType, double price) {
         this.name = name;
         this.tableType = tableType;
+        this.price = price;
     }
 }

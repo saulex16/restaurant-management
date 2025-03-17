@@ -10,9 +10,9 @@ import java.util.Optional;
 public interface RestaurantService {
     Restaurant getRestaurant(final long id);
     Restaurant createRestaurant(final String name, final String managerName, final int kitchenLimit, List<String> waiterNames, Optional<Double> vipTablePrice);
-    long addWaiter(final String waiterName);
-    void setVipTablePrice(final Double vipTablePrice);
+    long addWaiter(final long restaurantId, final String waiterName);
+    void setVipTablePrice(final long restaurantId, final Double vipTablePrice);
 
-    long addBasicTable(final String tableName);
-    long addVipTable(final String tableName);
+    long addBasicTable(final long restaurantId, final String tableName);
+    long addVipTable(final long restaurantId, final String tableName);
 }
