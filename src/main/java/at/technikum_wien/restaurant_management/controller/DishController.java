@@ -25,13 +25,13 @@ public class DishController {
     }
 
     @PostMapping()
-    public ResponseEntity<Dish> createDish(@PathVariable final Long restaurantId, @RequestBody DishDto dishDto) {
+    public ResponseEntity<DishDto> createDish(@PathVariable final Long restaurantId, @RequestBody DishDto dishDto) {
         Dish dish = dishService.createDish(restaurantId, dishDto.getName(),
-                dishDto.getBaseIngredients(),
-                dishDto.getOptionalIngredients(),
+                dishDto.getBaseIngredientsIds(),
+                dishDto.getOptionalIngredientsIds(),
                 dishDto.getDurationInMinutes(), dishDto.getMarkup());
 
-        return ResponseEntity.ok(dish);
+        return ResponseEntity.ok(DishDto.fromDish(dish));
     }
 
     @GetMapping()
@@ -57,8 +57,10 @@ public class DishController {
 
     }
 
+    //TODO: Use Dto fields to update
     @PutMapping("/{id}")
-    public ResponseEntity<DishDto> updateDish(@PathVariable final long restaurantId, @PathVariable final Long id){
+    public ResponseEntity<DishDto> updateDish(@PathVariable final long restaurantId, @PathVariable final Long id,
+                                              @RequestBody DishDto dto){
         Optional<Dish> maybeDish = dishService.getDishById(restaurantId, id);
 
         if (maybeDish.isPresent()) {

@@ -14,8 +14,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Repository
@@ -36,9 +38,15 @@ public class DishRepositoryImpl implements DishRepository {
     @Override
     public Dish createDish(long restaurantId, String name, List<Ingredient> baseIngredients, List<Ingredient> optionalIngredients, int durationInMinutes, double markup) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
-        Dish dish = new Dish(name,  durationInMinutes, markup, optionalIngredients, baseIngredients,restaurant);
+
+        Dish dish = new Dish(name, durationInMinutes, markup, new ArrayList<>(), new ArrayList<>(), restaurant);
+
+        dish.getBaseIngredients().addAll(baseIngredients);
+        dish.getOptionalIngredients().addAll(optionalIngredients);
 
         entityManager.persist(dish);
+        entityManager.flush();
+
         return dish;
     }
 

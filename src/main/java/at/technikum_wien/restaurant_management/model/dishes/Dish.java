@@ -23,14 +23,14 @@ public class Dish implements OrderableDish {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(
             name = "base_ingredients",
             joinColumns = @JoinColumn(name = "dish_id"),
             inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
     private List<Ingredient> baseIngredients;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(
             name = "optional_ingredients",
             joinColumns = @JoinColumn(name = "dish_id"),

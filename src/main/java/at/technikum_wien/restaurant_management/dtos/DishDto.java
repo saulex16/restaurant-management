@@ -4,11 +4,12 @@ import at.technikum_wien.restaurant_management.model.dishes.Dish;
 import at.technikum_wien.restaurant_management.model.Ingredient;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DishDto {
     private String name;
-    private List<Ingredient> baseIngredients;
-    private List<Ingredient> optionalIngredients;
+    private List<Long> baseIngredientsIds;
+    private List<Long> optionalIngredientsIds;
     private int durationInMinutes;
     private double markup; // The added price to ingredients costs
 
@@ -19,10 +20,20 @@ public class DishDto {
         DishDto dto = new DishDto();
 
         dto.setName(dish.getName());
-        dto.setBaseIngredients(dish.getBaseIngredients());
-        dto.setOptionalIngredients(dish.getOptionalIngredients());
         dto.setDurationInMinutes(dish.getDurationInMinutes());
         dto.setMarkup(dish.getMarkup());
+
+        dto.setBaseIngredientsIds(dish
+                .getBaseIngredients()
+                .stream()
+                .map(Ingredient::getId)
+                .collect(Collectors.toList()));
+
+        dto.setOptionalIngredientsIds(dish
+                .getOptionalIngredients()
+                .stream()
+                .map(Ingredient::getId)
+                .collect(Collectors.toList()));
 
         return dto;
     }
@@ -33,22 +44,6 @@ public class DishDto {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<Ingredient> getBaseIngredients() {
-        return baseIngredients;
-    }
-
-    public void setBaseIngredients(List<Ingredient> baseIngredients) {
-        this.baseIngredients = baseIngredients;
-    }
-
-    public List<Ingredient> getOptionalIngredients() {
-        return optionalIngredients;
-    }
-
-    public void setOptionalIngredients(List<Ingredient> optionalIngredients) {
-        this.optionalIngredients = optionalIngredients;
     }
 
     public int getDurationInMinutes() {
@@ -65,5 +60,21 @@ public class DishDto {
 
     public void setMarkup(double markup) {
         this.markup = markup;
+    }
+
+    public List<Long> getBaseIngredientsIds() {
+        return baseIngredientsIds;
+    }
+
+    public void setBaseIngredientsIds(List<Long> baseIngredientsIds) {
+        this.baseIngredientsIds = baseIngredientsIds;
+    }
+
+    public List<Long> getOptionalIngredientsIds() {
+        return optionalIngredientsIds;
+    }
+
+    public void setOptionalIngredientsIds(List<Long> optionalIngredientsIds) {
+        this.optionalIngredientsIds = optionalIngredientsIds;
     }
 }
