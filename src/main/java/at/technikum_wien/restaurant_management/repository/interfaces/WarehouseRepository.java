@@ -5,6 +5,7 @@ import at.technikum_wien.restaurant_management.model.Warehouse;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface WarehouseRepository extends JpaRepository<Warehouse,Long> {
-    void createStock(long restaurantId, Stock stock);
-    void updateStock(long restaurantId, Stock stock);
+    //TODO: Comentado porque lanza excepcion
+    //void createStock(long restaurantId, Stock stock);
+    //void updateStock(long restaurantId, Stock stock);
 }

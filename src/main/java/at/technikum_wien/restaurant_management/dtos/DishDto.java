@@ -1,6 +1,6 @@
 package at.technikum_wien.restaurant_management.dtos;
 
-import at.technikum_wien.restaurant_management.model.Dish;
+import at.technikum_wien.restaurant_management.model.dishes.Dish;
 import at.technikum_wien.restaurant_management.model.Ingredient;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package at.technikum_wien.restaurant_management.controller;
 
 import at.technikum_wien.restaurant_management.dtos.DishDto;
-import at.technikum_wien.restaurant_management.model.Dish;
+import at.technikum_wien.restaurant_management.model.dishes.Dish;
 import at.technikum_wien.restaurant_management.service.interfaces.DishService;
 import at.technikum_wien.restaurant_management.utils.Endpoints;
 import org.springframework.beans.factory.annotation.Autowired;

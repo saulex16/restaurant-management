@@ -25,25 +25,26 @@ public class Restaurant {
     @Column(name = "vip_table_price", nullable = true)
     private Double vipTablePrice;
 
-    @OneToMany(mappedBy = "restaurant")
+    @OneToMany
+    @JoinColumn(name = "restaurant_id")
     private List<Table> tables;
 
-    @OneToMany(mappedBy = "restaurant")
+    @OneToMany
+    @JoinColumn(name = "restaurant_id")
     private List<Waiter> waiters;
 
-    @OneToOne(mappedBy = "restaurant")
+    @OneToOne
     @JoinColumn(name = "kitchen_id", referencedColumnName = "id")
     private Kitchen kitchen;
 
-    @OneToOne(mappedBy = "restaurant")
+    @OneToOne
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
     private Manager manager;
 
-    @OneToOne(mappedBy = "restaurant")
-    @JoinColumn(name = "menu_id", referencedColumnName = "id")
+    @Transient
     private Menu menu;
 
-    @OneToOne(mappedBy = "restaurant")
+    @OneToOne
     @JoinColumn(name = "warehouse_id", referencedColumnName = "id")
     private Warehouse warehouse;
 

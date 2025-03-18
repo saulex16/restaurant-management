@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@jakarta.persistence.Table(name = "order")
+@jakarta.persistence.Table(name = "restaurant_order")
 public class Order {
 
     @Id
@@ -27,7 +27,7 @@ public class Order {
             inverseJoinColumns = @JoinColumn(name = "dish_id"))
     private List<OrderedDish> orderedDishes;
 
-    @OneToOne(mappedBy = "order")
+    @OneToOne
     @JoinColumn(name = "table_id", referencedColumnName = "id")
     private Table table;
 

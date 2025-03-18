@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@jakarta.persistence.Table(name = "table")
+@jakarta.persistence.Table(name = "restaurant_table")
 public class Table {
 
     @Id
@@ -27,7 +27,7 @@ public class Table {
     @Column(name = "price", nullable = false)
     private double price;
 
-    @OneToOne(mappedBy = "order")
+    @OneToOne(mappedBy = "table")
     private Order order;
 
     public Table() {}

@@ -14,7 +14,7 @@ public class OrderedDish {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ordered_dish_id_generator")
     @SequenceGenerator(name = "ordered_dish_id_generator", sequenceName = "ordered_dish_id_seq", allocationSize = 1)
-    @Column(name = "dish_id", updatable = false, nullable = false)
+    @Column(name = "ordered_dish_id", updatable = false, nullable = false)
     private long id;
 
     @ManyToOne

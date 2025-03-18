@@ -16,14 +16,14 @@ public class Kitchen {
     @Column(name = "id", updatable = false, nullable = false)
     private long id;
 
-    @Column(name = "limit", nullable = false)
-    private int limit; // The amount of dishes that can be cooked simultaneously
+    @Column(name = "dishes_limit", nullable = false)
+    private int dishesLimit; // The amount of dishes that can be cooked simultaneously
 
     @OneToOne(mappedBy = "kitchen")
     private Restaurant restaurant;
 
-    public Kitchen(int limit) {
-        this.limit = limit;
+    public Kitchen(int dishesLimit) {
+        this.dishesLimit = dishesLimit;
     }
 
     public Kitchen() {}

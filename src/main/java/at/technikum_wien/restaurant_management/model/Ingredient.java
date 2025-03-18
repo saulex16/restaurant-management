@@ -24,10 +24,18 @@ public class Ingredient {
     @Column(name = "price", nullable = false)
     private double price;
 
-    @ManyToMany(mappedBy = "base_ingredients")
+    @ManyToMany
+    @JoinTable(
+            name = "base_ingredients",
+            joinColumns = @JoinColumn(name = "dish_id"),
+            inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
     private List<Dish> baseDishes;
 
-    @ManyToMany(mappedBy = "optional_ingredients")
+    @ManyToMany()
+    @JoinTable(
+            name = "optional_ingredients",
+            joinColumns = @JoinColumn(name = "dish_id"),
+            inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
     private List<Dish> optionalDishes;
 
     public Ingredient (String name, double price){
