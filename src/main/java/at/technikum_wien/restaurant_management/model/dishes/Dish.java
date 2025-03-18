@@ -50,6 +50,8 @@ public class Dish implements OrderableDish {
     @OneToMany(mappedBy = "dish")
     private List<OrderedDish> orderedDishes;
 
+    private boolean available;
+
     public Dish() { }
 
     public Dish(String name, int duration, double markup, List<Ingredient> optionalIngredients, List<Ingredient> baseIngredients, Restaurant restaurant) {
@@ -59,6 +61,10 @@ public class Dish implements OrderableDish {
         this.markup = markup;
         this.durationInMinutes = duration;
         this.restaurant = restaurant;
+
+        //TODO: Check if all baseIngredients have stock
+        //Is modify once all the ingredients have stock
+        this.available = false;
     }
 
     @Override

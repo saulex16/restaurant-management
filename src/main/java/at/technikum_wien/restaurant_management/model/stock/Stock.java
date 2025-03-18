@@ -1,5 +1,7 @@
-package at.technikum_wien.restaurant_management.model;
+package at.technikum_wien.restaurant_management.model.stock;
 
+import at.technikum_wien.restaurant_management.model.Ingredient;
+import at.technikum_wien.restaurant_management.model.Warehouse;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

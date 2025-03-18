@@ -1,6 +1,8 @@
 package at.technikum_wien.restaurant_management.model;
 
 import at.technikum_wien.restaurant_management.model.dishes.Dish;
+import at.technikum_wien.restaurant_management.model.dishes.OrderableDish;
+import at.technikum_wien.restaurant_management.model.stock.Stock;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,6 +40,9 @@ public class Ingredient {
             inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
     private List<Dish> optionalDishes;
 
+    @OneToOne(mappedBy = "ingredient")
+    private Stock stock;
+
     public Ingredient (String name, double price){
         this.name = name;
         this.price = price;
@@ -45,3 +50,9 @@ public class Ingredient {
 
     public Ingredient() {}
 }
+
+
+
+
+
+

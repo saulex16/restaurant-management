@@ -100,6 +100,7 @@ public class DishRepositoryImpl implements DishRepository {
             oldDish.setBaseIngredients(dish.getBaseIngredients());
             oldDish.setOptionalIngredients(dish.getOptionalIngredients());
             oldDish.setDurationInMinutes(dish.getDurationInMinutes());
+            oldDish.setAvailable(dish.isAvailable());
 
             entityManager.merge(oldDish);
 

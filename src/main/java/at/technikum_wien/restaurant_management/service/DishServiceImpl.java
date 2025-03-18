@@ -3,6 +3,11 @@ package at.technikum_wien.restaurant_management.service;
 import at.technikum_wien.restaurant_management.model.Ingredient;
 import at.technikum_wien.restaurant_management.model.dishes.Dish;
 import at.technikum_wien.restaurant_management.model.Menu;
+import at.technikum_wien.restaurant_management.model.notifications.LowStockNotification;
+import at.technikum_wien.restaurant_management.model.notifications.Notification;
+import at.technikum_wien.restaurant_management.model.notifications.NotificationType;
+import at.technikum_wien.restaurant_management.model.notifications.Observer;
+import at.technikum_wien.restaurant_management.model.stock.Stock;
 import at.technikum_wien.restaurant_management.repository.interfaces.DishRepository;
 import at.technikum_wien.restaurant_management.repository.interfaces.IngredientRepository;
 import at.technikum_wien.restaurant_management.service.interfaces.DishService;
@@ -14,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class DishServiceImpl implements DishService {
+public class DishServiceImpl implements DishService, Observer<Stock> {
 
     private final DishRepository dishRepository;
 
@@ -55,4 +60,33 @@ public class DishServiceImpl implements DishService {
     public void deleteDish(long restaurantId, Long id) {
         dishRepository.deleteDish(restaurantId, id);
     }
+
+    @Override
+    public void notify(Notification<Stock> notification) {
+        Stock stock = notification.getPayload();
+        Strategy strategy = strategyManager.getStrategy(notification.getNotificationType());
+        strategy.process(notification.getPayload());
+        int quantity =
+
+    }
+
+
+    @Override
+    public List<NotificationType> getNotificationTypes() {
+        return List.of(NotificationType.LOW_STOCK, NotificationType.ADDED_STOCK);
+    }
+
+    public void onStockDepleted(Ingredient ingredient) {
+        for (Dish dish: ingredient.getBaseDishes()){
+            dish.setAvailable(false);
+            dishRepository.updateDish(dish.getRestaurant().getId(), dish);
+        }
+
+        for (Dish dish: ingredient.getOptionalDishes()){
+            dish.setAvailable(false);
+            dishRepository.updateDish(dish.getRestaurant().getId(), dish);
+        }
+    }
+
+
 }
