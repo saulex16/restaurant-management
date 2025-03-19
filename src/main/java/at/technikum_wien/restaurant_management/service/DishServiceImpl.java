@@ -3,7 +3,8 @@ package at.technikum_wien.restaurant_management.service;
 import at.technikum_wien.restaurant_management.model.Ingredient;
 import at.technikum_wien.restaurant_management.model.dishes.Dish;
 import at.technikum_wien.restaurant_management.model.Menu;
-import at.technikum_wien.restaurant_management.model.notifications.LowStockNotification;
+import at.technikum_wien.restaurant_management.model.dishes.StockNotificationDishStrategy;
+import at.technikum_wien.restaurant_management.model.dishes.StrategyManager;
 import at.technikum_wien.restaurant_management.model.notifications.Notification;
 import at.technikum_wien.restaurant_management.model.notifications.NotificationType;
 import at.technikum_wien.restaurant_management.model.notifications.Observer;
@@ -24,11 +25,13 @@ public class DishServiceImpl implements DishService, Observer<Stock> {
     private final DishRepository dishRepository;
 
     private final IngredientRepository ingredientRepository;
+    private final StrategyManager strategyManager;
 
     @Autowired
-    public DishServiceImpl(DishRepository dishRepository, IngredientRepository ingredientRepository) {
+    public DishServiceImpl(DishRepository dishRepository, IngredientRepository ingredientRepository, StrategyManager strategyManager ) {
         this.dishRepository = dishRepository;
         this.ingredientRepository = ingredientRepository;
+        this.strategyManager = strategyManager;
     }
 
     @Override
@@ -64,16 +67,15 @@ public class DishServiceImpl implements DishService, Observer<Stock> {
     @Override
     public void notify(Notification<Stock> notification) {
         Stock stock = notification.getPayload();
-        Strategy strategy = strategyManager.getStrategy(notification.getNotificationType());
-        strategy.process(notification.getPayload());
-        int quantity =
+        StockNotificationDishStrategy strategy = strategyManager.getStrategy(notification.getNotificationType());
+        strategy.processNotification(notification);
 
     }
 
 
     @Override
     public List<NotificationType> getNotificationTypes() {
-        return List.of(NotificationType.LOW_STOCK, NotificationType.ADDED_STOCK);
+        return List.of(NotificationType.OUT_OF_STOCK, NotificationType.ADDED_STOCK);
     }
 
     public void onStockDepleted(Ingredient ingredient) {

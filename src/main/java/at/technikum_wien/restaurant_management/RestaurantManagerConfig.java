@@ -22,12 +22,13 @@ public class RestaurantManagerConfig {
     }
 
     @Bean
-    public LowStockNotificationFactory lowStockNotificationFactory() {
-        return new LowStockNotificationFactory();
+    public OutOfStockNotificationFactory outOfStockNotificationFactory() {
+        return new OutOfStockNotificationFactory();
     }
 
     @Bean
     public AddedStockNotificationFactory addedStockNotificationFactory() {
         return new AddedStockNotificationFactory();
     }
+
 }

@@ -2,12 +2,12 @@ package at.technikum_wien.restaurant_management.model.notifications;
 
 import at.technikum_wien.restaurant_management.model.stock.Stock;
 
-public class LowStockNotification extends Notification<Stock> {
+public class OutOfStockNotification extends Notification<Stock> {
 
     private final Stock stock;
     
-    public LowStockNotification(Stock stock) {
-        super(NotificationType.LOW_STOCK);
+    public OutOfStockNotification(Stock stock) {
+        super(NotificationType.OUT_OF_STOCK);
         this.stock = stock;
     }
 

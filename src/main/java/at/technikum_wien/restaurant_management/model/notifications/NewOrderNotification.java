@@ -12,7 +12,7 @@ public class NewOrderNotification extends Notification<OrderedDish> {
     }
 
     @Override
-    OrderedDish getPayload() {
+    public OrderedDish getPayload() {
         return this.orderedDish;
     }
 }

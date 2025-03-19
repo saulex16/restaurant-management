@@ -12,7 +12,7 @@ public class AddedStockNotification extends Notification<Stock> {
     }
 
     @Override
-    Stock getPayload() {
+    public Stock getPayload() {
         return this.stock;
     }
 }

@@ -16,7 +16,7 @@ import java.util.Optional;
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
-    private final LowStockNotificationFactory lowStockNotificationFactory;
+    private final OutOfStockNotificationFactory outOfStockNotificationFactory;
     private final AddedStockNotificationFactory addedStockNotificationFactory;
     private final Notifier notifier;
 
@@ -24,12 +24,12 @@ public class WarehouseServiceImpl implements WarehouseService {
     public WarehouseServiceImpl(
             WarehouseRepository warehouseRepository,
             Notifier notifier,
-            LowStockNotificationFactory lowStockNotificationFactory,
+            OutOfStockNotificationFactory outOfStockNotificationFactory,
             AddedStockNotificationFactory addedStockNotificationFactory
     ) {
         this.warehouseRepository = warehouseRepository;
         this.notifier = notifier;
-        this.lowStockNotificationFactory = lowStockNotificationFactory;
+        this.outOfStockNotificationFactory = outOfStockNotificationFactory;
         this.addedStockNotificationFactory = addedStockNotificationFactory;
     }
 
@@ -66,7 +66,7 @@ public class WarehouseServiceImpl implements WarehouseService {
         }
 
         if (stock.getQuantity() == 0) {
-            notifier.notify(lowStockNotificationFactory.createNotification(stock));
+            notifier.notify(outOfStockNotificationFactory.createNotification(stock));
         }
         return stock;
     }
