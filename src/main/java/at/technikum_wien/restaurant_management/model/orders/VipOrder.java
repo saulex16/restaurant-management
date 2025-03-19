@@ -1,7 +1,6 @@
 package at.technikum_wien.restaurant_management.model.orders;
 
 import at.technikum_wien.restaurant_management.model.Waiter;
-import at.technikum_wien.restaurant_management.model.dishes.OrderableDish;
 import at.technikum_wien.restaurant_management.model.dishes.OrderedDish;
 import at.technikum_wien.restaurant_management.model.tables.VipTable;
 

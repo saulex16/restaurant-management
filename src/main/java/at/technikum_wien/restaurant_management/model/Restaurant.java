@@ -1,5 +1,6 @@
 package at.technikum_wien.restaurant_management.model;
 
+import at.technikum_wien.restaurant_management.model.orders.Order;
 import at.technikum_wien.restaurant_management.model.tables.Table;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -47,6 +48,10 @@ public class Restaurant {
     @OneToOne
     @JoinColumn(name = "warehouse_id", referencedColumnName = "id")
     private Warehouse warehouse;
+
+    @OneToMany
+    @JoinColumn(name = "restaurant_id")
+    private List<Order> orders;
 
     public Restaurant() {}
 

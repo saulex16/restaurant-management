@@ -2,6 +2,7 @@ package at.technikum_wien.restaurant_management.service;
 
 import at.technikum_wien.restaurant_management.model.Ingredient;
 import at.technikum_wien.restaurant_management.model.Restaurant;
+import at.technikum_wien.restaurant_management.model.dishes.Dish;
 import at.technikum_wien.restaurant_management.model.notifications.*;
 import at.technikum_wien.restaurant_management.model.stock.Stock;
 import at.technikum_wien.restaurant_management.model.Warehouse;
@@ -10,10 +11,11 @@ import at.technikum_wien.restaurant_management.service.interfaces.WarehouseServi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public class WarehouseServiceImpl implements WarehouseService {
+public class WarehouseServiceImpl implements WarehouseService, Observer<Stock> {
 
     private final WarehouseRepository warehouseRepository;
     private final OutOfStockNotificationFactory outOfStockNotificationFactory;
@@ -36,17 +38,17 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public Warehouse createWarehouse(Restaurant restaurant) {
-        return null;
+        return warehouseRepository.createWarehouse(restaurant);
     }
 
     @Override
-    public Warehouse getWarehouse(Long id) {
-        return null;
+    public Optional<Warehouse> getWarehouse(Long id) {
+        return warehouseRepository.getWarehouse(id);
     }
 
     @Override
-    public Stock createStockForWarehouse(Ingredient ingredient, Long quantity, Warehouse warehouse) {
-        return null;
+    public Stock createStockForWarehouse(Ingredient ingredient, Long quantity, Long warehouseId) {
+        return warehouseRepository.createStockForWarehouse(ingredient, quantity, warehouseId);
     }
 
     @Override
@@ -87,17 +89,28 @@ public class WarehouseServiceImpl implements WarehouseService {
         stock.setQuantity(currentQuantity);
         warehouseRepository.updateStock(stock);
 
-        notifier.notify(addedStockNotificationFactory.createNotification(stock));
-
         return stock;
     }
 
     @Override
-    public Stock getStock(Long id) {
-        Optional<Stock> maybeStock = warehouseRepository.getStock(id);
-        if (maybeStock.isEmpty()) {
-            throw new IllegalArgumentException("Stock with ID: " + id + "doesn't exists");
-        }
-        return maybeStock.get();
+    public Optional<Stock> getStock(Long id) {
+        return warehouseRepository.getStock(id);
+    }
+
+    @Override
+    public boolean dishHasStock(Dish dish) {
+        List<Stock> dishStock = warehouseRepository.getStockByDish(dish);
+        return dish.getBaseIngredients().size() == dishStock.size();
+    }
+
+    @Override
+    public void notify(Notification<Stock> notification) {
+        Stock stock = notification.getPayload();
+        this.addStock(stock.getId(), stock.getQuantity());
+    }
+
+    @Override
+    public List<NotificationType> getNotificationTypes() {
+        return List.of(NotificationType.ADDED_STOCK);
     }
 }

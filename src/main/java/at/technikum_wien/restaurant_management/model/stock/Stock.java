@@ -35,4 +35,8 @@ public class Stock {
         this.ingredient = ingredient;
         this.quantity = quantity;
     }
+
+    public boolean isEmpty() {
+        return quantity == 0;
+    }
 }

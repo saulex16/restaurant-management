@@ -1,5 +1,6 @@
 package at.technikum_wien.restaurant_management.model.tables;
 
+import at.technikum_wien.restaurant_management.model.Restaurant;
 import at.technikum_wien.restaurant_management.model.orders.Order;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -30,11 +31,19 @@ public class Table {
     @OneToOne(mappedBy = "table")
     private Order order;
 
+    @Column(name = "is_occupied", nullable = false)
+    private boolean isOccupied;
+
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
+
     public Table() {}
 
-    public Table(String name, TableType tableType, double price) {
+    public Table(String name, TableType tableType, double price, boolean isOccupied) {
         this.name = name;
         this.tableType = tableType;
         this.price = price;
+        this.isOccupied = isOccupied;
     }
 }

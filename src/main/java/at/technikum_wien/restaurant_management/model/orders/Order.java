@@ -1,12 +1,14 @@
 package at.technikum_wien.restaurant_management.model.orders;
 
+import at.technikum_wien.restaurant_management.model.Restaurant;
 import at.technikum_wien.restaurant_management.model.Waiter;
-import at.technikum_wien.restaurant_management.model.dishes.OrderableDish;
 import at.technikum_wien.restaurant_management.model.dishes.OrderedDish;
+import at.technikum_wien.restaurant_management.model.orders.OrderState;
 import at.technikum_wien.restaurant_management.model.tables.Table;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -39,15 +41,17 @@ public class Order {
     @Column(name = "state", nullable = false)
     private OrderState state;
 
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
 
-    public Order(Table table, Waiter waiter, List<OrderedDish> orderedDishes, OrderState state) {
-        this.orderedDishes = orderedDishes;
+    public Order(Restaurant restaurant, Table table, Waiter waiter, OrderState state) {
+        this.orderedDishes = new ArrayList<>();
+        this.restaurant = restaurant;
         this.table = table;
         this.waiter = waiter;
         this.state = state;
     }
 
-    public Order() {
-
-    }
+    public Order() { }
 }

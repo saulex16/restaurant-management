@@ -19,6 +19,10 @@ public class Waiter {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
+    @ManyToOne
+    @Column(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
+
     public Waiter(String name) {
         this.name = name;
     }

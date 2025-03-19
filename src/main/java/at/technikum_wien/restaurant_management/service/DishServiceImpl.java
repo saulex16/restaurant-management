@@ -66,29 +66,14 @@ public class DishServiceImpl implements DishService, Observer<Stock> {
 
     @Override
     public void notify(Notification<Stock> notification) {
-        Stock stock = notification.getPayload();
         StockNotificationDishStrategy strategy = strategyManager.getStrategy(notification.getNotificationType());
         strategy.processNotification(notification);
 
     }
 
-
     @Override
     public List<NotificationType> getNotificationTypes() {
         return List.of(NotificationType.OUT_OF_STOCK, NotificationType.ADDED_STOCK);
     }
-
-    public void onStockDepleted(Ingredient ingredient) {
-        for (Dish dish: ingredient.getBaseDishes()){
-            dish.setAvailable(false);
-            dishRepository.updateDish(dish.getRestaurant().getId(), dish);
-        }
-
-        for (Dish dish: ingredient.getOptionalDishes()){
-            dish.setAvailable(false);
-            dishRepository.updateDish(dish.getRestaurant().getId(), dish);
-        }
-    }
-
 
 }

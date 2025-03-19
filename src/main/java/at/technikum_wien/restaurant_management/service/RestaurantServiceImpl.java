@@ -115,7 +115,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public long addBasicTable(final long restaurantId, final String tableName) {
-        Table newTable = new BasicTable(tableName);
+        Table newTable = new BasicTable(tableName, false);
         return addTable(restaurantId, newTable).getId();
     }
 
@@ -126,7 +126,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         if (vipTablePrice == null) {
             throw new IllegalArgumentException("Vip table price not set");
         }
-        Table newTable = new VipTable(tableName, vipTablePrice);
+        Table newTable = new VipTable(tableName, vipTablePrice, false);
         return addTable(restaurant, newTable).getId();
     }
 }
