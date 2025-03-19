@@ -6,12 +6,12 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class OrderableIngredientDecorator implements OrderableDish {
+public class OrderableDishIngredientDecorator implements OrderableDish {
 
     private final Ingredient ingredient;
     private final OrderableDish orderableDish;
 
-    public OrderableIngredientDecorator(OrderableDish orderableDish, Ingredient ingredient) {
+    public OrderableDishIngredientDecorator(OrderableDish orderableDish, Ingredient ingredient) {
         this.ingredient = ingredient;
         this.orderableDish = orderableDish;
     }

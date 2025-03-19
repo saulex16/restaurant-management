@@ -2,19 +2,20 @@ package at.technikum_wien.restaurant_management.model.orders;
 
 import at.technikum_wien.restaurant_management.model.Restaurant;
 import at.technikum_wien.restaurant_management.model.Waiter;
+import at.technikum_wien.restaurant_management.model.bills.BillVisitor;
+import at.technikum_wien.restaurant_management.model.bills.Billable;
 import at.technikum_wien.restaurant_management.model.dishes.OrderedDish;
-import at.technikum_wien.restaurant_management.model.orders.OrderState;
 import at.technikum_wien.restaurant_management.model.tables.Table;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
+@Data
 @jakarta.persistence.Table(name = "restaurant_order")
-public class Order {
+public class Order implements Billable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_id_generator")
@@ -29,8 +30,7 @@ public class Order {
             inverseJoinColumns = @JoinColumn(name = "dish_id"))
     private List<OrderedDish> orderedDishes;
 
-    @OneToOne
-    @JoinColumn(name = "table_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "order")
     private Table table;
 
     @ManyToOne
@@ -54,4 +54,9 @@ public class Order {
     }
 
     public Order() { }
+
+    @Override
+    public void accept(BillVisitor visitor) {
+        visitor.visitOrder(this);
+    }
 }

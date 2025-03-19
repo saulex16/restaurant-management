@@ -1,18 +1,18 @@
 package at.technikum_wien.restaurant_management.model.notifications;
 
-import at.technikum_wien.restaurant_management.model.dishes.OrderedDish;
+import at.technikum_wien.restaurant_management.model.orders.Order;
 
-public class OrderReadyNotification extends Notification<OrderedDish> {
+public class OrderReadyNotification extends Notification<Order> {
 
-    private final OrderedDish orderedDish;
+    private final Order order;
 
-    public OrderReadyNotification(OrderedDish orderedDish) {
+    public OrderReadyNotification(Order order) {
         super(NotificationType.ORDER_READY);
-        this.orderedDish = orderedDish;
+        this.order = order;
     }
 
     @Override
-    public OrderedDish getPayload() {
-        return this.orderedDish;
+    public Order getPayload() {
+        return this.order;
     }
 }

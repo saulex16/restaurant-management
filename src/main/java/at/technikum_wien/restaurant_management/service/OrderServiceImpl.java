@@ -1,13 +1,15 @@
 package at.technikum_wien.restaurant_management.service;
 
-import at.technikum_wien.restaurant_management.model.Bill;
+import at.technikum_wien.restaurant_management.model.bills.Bill;
 import at.technikum_wien.restaurant_management.model.Ingredient;
 import at.technikum_wien.restaurant_management.model.Restaurant;
 import at.technikum_wien.restaurant_management.model.Waiter;
+import at.technikum_wien.restaurant_management.model.bills.SimpleBillVisitor;
 import at.technikum_wien.restaurant_management.model.dishes.Dish;
 import at.technikum_wien.restaurant_management.model.dishes.OrderableDish;
-import at.technikum_wien.restaurant_management.model.dishes.OrderableIngredientDecorator;
+import at.technikum_wien.restaurant_management.model.dishes.OrderableDishIngredientDecorator;
 import at.technikum_wien.restaurant_management.model.dishes.OrderedDish;
+import at.technikum_wien.restaurant_management.model.notifications.*;
 import at.technikum_wien.restaurant_management.model.orders.Order;
 import at.technikum_wien.restaurant_management.model.orders.OrderState;
 import at.technikum_wien.restaurant_management.model.stock.Stock;
@@ -21,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImpl implements OrderService, Observer<Order> {
 
     private final OrderRepository orderRepository;
     private final RestaurantRepository restaurantRepository;
@@ -29,6 +31,9 @@ public class OrderServiceImpl implements OrderService {
     private final WaiterRepository waiterRepository;
     private final DishRepository dishRepository;
     private final IngredientRepository ingredientRepository;
+    private final OrderedDishRepository orderedDishRepository;
+    private final Notifier notifier;
+    private final NewOrderNotificationFactory newOrderNotificationFactory;
 
     @Autowired
     public OrderServiceImpl(
@@ -37,7 +42,10 @@ public class OrderServiceImpl implements OrderService {
             TableRepository tableRepository,
             WaiterRepository waiterRepository,
             DishRepository dishRepository,
-            IngredientRepository ingredientRepository
+            IngredientRepository ingredientRepository,
+            OrderedDishRepository orderedDishRepository,
+            Notifier notifier,
+            NewOrderNotificationFactory newOrderNotificationFactory
     ) {
         this.orderRepository = orderRepository;
         this.restaurantRepository = restaurantRepository;
@@ -45,6 +53,27 @@ public class OrderServiceImpl implements OrderService {
         this.waiterRepository = waiterRepository;
         this.dishRepository = dishRepository;
         this.ingredientRepository = ingredientRepository;
+        this.orderedDishRepository = orderedDishRepository;
+        this.notifier = notifier;
+        this.newOrderNotificationFactory = newOrderNotificationFactory;
+    }
+
+    @Override
+    public List<NotificationType> getNotificationTypes() {
+        return List.of(NotificationType.ORDER_READY);
+    }
+
+    @Override
+    public void notify(Notification<Order> notification) {
+        Order order = notification.getPayload();
+        NotificationType notificationType = notification.getNotificationType();
+        if (!notificationType.equals(NotificationType.ORDER_READY)) {
+            throw new IllegalArgumentException("Invalid notification type");
+        }
+        if (!order.getState().equals(OrderState.COOKED)) {
+            throw new IllegalArgumentException("Invalid order state");
+        }
+        deliverOrder(order);
     }
 
     @Override
@@ -75,6 +104,10 @@ public class OrderServiceImpl implements OrderService {
         }
         Order order = new Order(restaurant, table, waiter, OrderState.CREATED);
         orderRepository.save(order);
+
+        table.setOrder(order);
+        tableRepository.save(table);
+
         return order.getId();
     }
 
@@ -111,22 +144,70 @@ public class OrderServiceImpl implements OrderService {
             if (stock.isEmpty()) {
                 throw new IllegalStateException("The ingredient " + ingredient + " has no stock");
             }
-            orderableDish = new OrderableIngredientDecorator(dish, ingredient);
+            orderableDish = new OrderableDishIngredientDecorator(dish, ingredient);
         }
         OrderedDish orderedDish = new OrderedDish(orderableDish.getDish(), orderableDish.getIngredients());
-        // TODO: Save orderedDish and add to the order
+        OrderedDish savedOrderedDish = orderedDishRepository.save(orderedDish);
+        List<OrderedDish> orderedDishes = order.getOrderedDishes();
+        orderedDishes.add(orderedDish);
+        order.setOrderedDishes(orderedDishes);
+        orderRepository.save(order);
+        return savedOrderedDish.getId();
     }
 
     @Override
-    public void queueOrder(long orderId);
+    public void queueOrder(long orderId) {
+        Optional<Order> maybeOrder = orderRepository.findById(orderId);
+        if (maybeOrder.isEmpty()) {
+            throw new IllegalArgumentException("Order not found");
+        }
+        Order order = maybeOrder.get();
+        if (!order.getState().equals(OrderState.CREATED)) {
+            throw new IllegalArgumentException("Invalid order state");
+        }
+        order.setState(OrderState.QUEUED);
+        orderRepository.save(order);
+        notifier.notify(newOrderNotificationFactory.createNotification(order));
+    }
+
+    private void deliverOrder(Order order) {
+        order.setState(OrderState.DELIVERED);
+        orderRepository.save(order);
+    }
 
     @Override
-    public void deliverOrder(long orderId);
+    public void deliverOrder(long orderId) {
+        Optional<Order> maybeOrder = orderRepository.findById(orderId);
+        if (maybeOrder.isEmpty()) {
+            throw new IllegalArgumentException("Order not found");
+        }
+        Order order = maybeOrder.get();
+        if (!order.getState().equals(OrderState.COOKED)) {
+            throw new IllegalArgumentException("Invalid order state");
+        }
+        deliverOrder(order);
+    }
 
     @Override
-    public Bill getBill(long orderId);
+    public Bill getBill(long orderId) {
+        Optional<Order> maybeOrder = orderRepository.findById(orderId);
+        if (maybeOrder.isEmpty()) {
+            throw new IllegalArgumentException("Order not found");
+        }
+        Order order = maybeOrder.get();
+        if (!order.getState().equals(OrderState.DELIVERED)) {
+            throw new IllegalArgumentException("Invalid order state");
+        }
+        Table table = order.getTable();
+        SimpleBillVisitor billVisitor = new SimpleBillVisitor();
+        order.accept(billVisitor);
+        table.accept(billVisitor);
+        return billVisitor.getBill();
+    }
 
     @Override
-    public Optional<Order> getOrderById(long restaurantId, long id);
+    public Optional<Order> getOrderById(long id) {
+        return orderRepository.findById(id);
+    }
 
 }

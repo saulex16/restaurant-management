@@ -1,11 +1,13 @@
 package at.technikum_wien.restaurant_management.model.notifications;
 
-import at.technikum_wien.restaurant_management.model.dishes.OrderedDish;
+import at.technikum_wien.restaurant_management.model.orders.Order;
+import org.springframework.stereotype.Component;
 
-public class OrderReadyNotificationFactory extends NotificationFactory<OrderedDish> {
+@Component
+public class OrderReadyNotificationFactory extends NotificationFactory<Order> {
 
     @Override
-    public Notification<OrderedDish> createNotification(OrderedDish payload) {
+    public Notification<Order> createNotification(Order payload) {
         return new OrderReadyNotification(payload);
     }
 }

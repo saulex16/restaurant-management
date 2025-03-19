@@ -1,6 +1,8 @@
 package at.technikum_wien.restaurant_management.model.tables;
 
 import at.technikum_wien.restaurant_management.model.Restaurant;
+import at.technikum_wien.restaurant_management.model.bills.BillVisitor;
+import at.technikum_wien.restaurant_management.model.bills.Billable;
 import at.technikum_wien.restaurant_management.model.orders.Order;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @jakarta.persistence.Table(name = "restaurant_table")
-public class Table {
+public class Table implements Billable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "table_id_generator")
@@ -28,11 +30,9 @@ public class Table {
     @Column(name = "price", nullable = false)
     private double price;
 
-    @OneToOne(mappedBy = "table")
+    @OneToOne
+    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = true)
     private Order order;
-
-    @Column(name = "is_occupied", nullable = false)
-    private boolean isOccupied;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
@@ -40,10 +40,18 @@ public class Table {
 
     public Table() {}
 
-    public Table(String name, TableType tableType, double price, boolean isOccupied) {
+    public Table(String name, TableType tableType, double price) {
         this.name = name;
         this.tableType = tableType;
         this.price = price;
-        this.isOccupied = isOccupied;
+    }
+
+    public boolean isOccupied() {
+        return order != null;
+    }
+
+    @Override
+    public void accept(BillVisitor visitor) {
+        visitor.visitTable(this);
     }
 }

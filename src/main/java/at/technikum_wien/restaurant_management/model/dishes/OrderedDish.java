@@ -38,4 +38,9 @@ public class OrderedDish {
     public double getTotalPrice() {
         return ingredients.stream().map(Ingredient::getPrice).reduce(dish.getMarkup(), Double::sum);
     }
+
+    public List<Ingredient> getAddedIngredients() {
+        List<Ingredient> baseIngredients = dish.getBaseIngredients();
+        return ingredients.stream().filter(ingredient -> !baseIngredients.contains(ingredient)).toList();
+    }
 }

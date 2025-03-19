@@ -27,4 +27,16 @@ public class Kitchen {
     }
 
     public Kitchen() {}
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Kitchen other)) return false;
+        return id == other.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
+    }
 }
