@@ -4,7 +4,7 @@ import at.technikum_wien.restaurant_management.model.orders.Order;
 
 public interface KitchenService {
 
-    public Order getNextOrder(long kitchenId);
+    public void getNextOrder(long kitchenId);
     public void cookOrder(long orderId);
     public void setOrderReady (long orderId);
 }

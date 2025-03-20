@@ -52,7 +52,9 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     private Kitchen createAndGetKitchen(int kitchenLimit) {
-        return kitchenRepository.save(new Kitchen(kitchenLimit));
+        Kitchen kitchen = new Kitchen(kitchenLimit);
+        kitchen.setCurrentDishes(0);
+        return kitchenRepository.save(kitchen);
     }
 
     private Waiter createAndGetWaiter(String waiterName) {

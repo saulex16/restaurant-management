@@ -19,6 +19,9 @@ public class Kitchen {
     @Column(name = "dishes_limit", nullable = false)
     private int dishesLimit; // The amount of dishes that can be cooked simultaneously
 
+    @Column(name ="current_dishes", nullable = false)
+    private int currentDishes;
+
     @OneToOne(mappedBy = "kitchen")
     private Restaurant restaurant;
 
