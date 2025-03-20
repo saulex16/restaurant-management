@@ -64,8 +64,11 @@ public class DishController {
         Optional<Dish> maybeDish = dishService.getDishById(restaurantId, id);
 
         if (maybeDish.isPresent()) {
-            Dish dish = dishService.updateDish(restaurantId, maybeDish.get());
-            return ResponseEntity.ok(DishDto.fromDish(dish));
+            Dish dish = maybeDish.get();
+            dish.setDurationInMinutes(dto.getDurationInMinutes());
+            dish.setMarkup(dto.getMarkup());
+            Dish savedDish = dishService.updateDish(restaurantId, dish);
+            return ResponseEntity.ok(DishDto.fromDish(savedDish));
         }
 
         return ResponseEntity.notFound().build();

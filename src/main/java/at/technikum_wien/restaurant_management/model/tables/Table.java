@@ -40,10 +40,11 @@ public class Table implements Billable {
 
     public Table() {}
 
-    public Table(String name, TableType tableType, double price) {
+    public Table(Restaurant restaurant, String name, TableType tableType, double price) {
         this.name = name;
         this.tableType = tableType;
         this.price = price;
+        this.restaurant = restaurant;
     }
 
     public boolean isOccupied() {

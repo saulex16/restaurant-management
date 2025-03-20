@@ -110,15 +110,11 @@ public class RestaurantServiceImpl implements RestaurantService {
         return savedTable;
     }
 
-    private Table addTable(final long restaurantId, final Table table) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new IllegalArgumentException("Restaurant not found"));
-        return addTable(restaurant, table);
-    }
-
     @Override
     public long addBasicTable(final long restaurantId, final String tableName) {
-        Table newTable = new BasicTable(tableName);
-        return addTable(restaurantId, newTable).getId();
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new IllegalArgumentException("Restaurant not found"));
+        Table newTable = new BasicTable(restaurant, tableName);
+        return addTable(restaurant, newTable).getId();
     }
 
     @Override
@@ -128,7 +124,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         if (vipTablePrice == null) {
             throw new IllegalArgumentException("Vip table price not set");
         }
-        Table newTable = new VipTable(tableName, vipTablePrice);
+        Table newTable = new VipTable(restaurant, tableName, vipTablePrice);
         return addTable(restaurant, newTable).getId();
     }
 }
