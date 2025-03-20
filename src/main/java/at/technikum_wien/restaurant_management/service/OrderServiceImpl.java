@@ -112,7 +112,7 @@ public class OrderServiceImpl implements OrderService, Observer<Order> {
     }
 
     @Override
-    public long addDishToOrder(long orderId, long dishId, List<Long> optionalIngredientIds) {
+    public long addDishToOrder(long orderId, long dishId, List<Long> addedIngredientIds) {
         Optional<Order> maybeOrder = orderRepository.findById(orderId);
         if (maybeOrder.isEmpty()) {
             throw new IllegalArgumentException("Order not found");
@@ -131,10 +131,10 @@ public class OrderServiceImpl implements OrderService, Observer<Order> {
         }
         OrderableDish orderableDish = dish;
         List<Ingredient> optionalDishIngredients = dish.getOptionalIngredients();
-        for (Long optionalIngredientId : optionalIngredientIds) {
-            Optional<Ingredient> maybeIngredient = ingredientRepository.getIngredientById(optionalIngredientId);
+        for (Long addedIngredientId : addedIngredientIds) {
+            Optional<Ingredient> maybeIngredient = ingredientRepository.getIngredientById(addedIngredientId);
             if (maybeIngredient.isEmpty()) {
-                throw new IllegalArgumentException("The ingredient " + optionalIngredientId + " does not exist");
+                throw new IllegalArgumentException("The ingredient " + addedIngredientId + " does not exist");
             }
             Ingredient ingredient = maybeIngredient.get();
             if (!optionalDishIngredients.contains(ingredient)) {
