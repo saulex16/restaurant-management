@@ -312,7 +312,7 @@ _Response if not found_: `404 Not Found`
 ### Orders
 #### Create an order
 
-_Method_: **POST** `/orders`
+_Method_: **POST** `/orders`  
 _Body_:
 ```json
 {
@@ -325,28 +325,28 @@ _Response_: The id of the created order
 
 #### Get an order by id
 
-_Method_: **GET** `/orders/{id}`
+_Method_: **GET** `/orders/{id}`  
 _Response_: The order with the given id
 
 #### Add a dish to an order
-_Method_: **PUT** `/orders/{id}/dishes`
+_Method_: **PUT** `/orders/{id}/dishes`  
 _Body_:
 ```json
 {
     "dishId": "The unique identifier of the dish",
     "addedIngredientsIds": "List of IDs of optional ingredients added to the dish"
 }
-```
+```  
 _Response_: The id of the created order item
 
 #### Queue an order
 
-_Method_: **PUT** `/orders/{id}`
+_Method_: **PUT** `/orders/{id}`  
 _Content-Type_: application/vnd.order.queue.v1+json
 
 #### Get the bill of an order
 
-_Method_: **GET** `/orders/{id}`
+_Method_: **GET** `/orders/{id}`  
 _Response_: The bill of the order with the given id
 
 ### Contributors
