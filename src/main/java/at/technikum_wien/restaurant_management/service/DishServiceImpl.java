@@ -76,7 +76,6 @@ public class DishServiceImpl implements DishService, Observer<Stock> {
     public void notify(Notification<Stock> notification) {
         StockNotificationDishStrategy strategy = strategyManager.getStrategy(notification.getNotificationType());
         strategy.processNotification(notification);
-
     }
 
     @Override

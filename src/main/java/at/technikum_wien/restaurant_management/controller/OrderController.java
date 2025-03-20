@@ -71,7 +71,7 @@ public class OrderController {
         return true;
     }*/
 
-    @PutMapping(path = "/{orderId}", consumes = VndType.ORDER_BILL_VND_TYPE)
+    @GetMapping(path = "/{orderId}", consumes = VndType.ORDER_BILL_VND_TYPE)
     public Bill getOrderBill(
             @PathVariable long orderId
     ) {

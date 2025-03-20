@@ -49,7 +49,7 @@ _Content-Type_: application/vnd.table.basic.v1+json
 _Body_:
 ```json
 {
-    "tableName": "Table Name",
+    "tableName": "Table Name"
 }
 ```
 _Response:_ The id of the created table
@@ -310,8 +310,44 @@ _Response if not found_: `404 Not Found`
 
 
 ### Orders
+#### Create an order
 
+_Method_: **POST** `/orders`
+_Body_:
+```json
+{
+    "restaurantId": "The unique identifier of the restaurant",
+    "tableId": "The unique identifier of the table",
+    "waiterId": "The unique identifier of the waiter"
+}
+```
+_Response_: The id of the created order
 
+#### Get an order by id
+
+_Method_: **GET** `/orders/{id}`
+_Response_: The order with the given id
+
+#### Add a dish to an order
+_Method_: **PUT** `/orders/{id}/dishes`
+_Body_:
+```json
+{
+    "dishId": "The unique identifier of the dish",
+    "addedIngredientsIds": "List of IDs of optional ingredients added to the dish"
+}
+```
+_Response_: The id of the created order item
+
+#### Queue an order
+
+_Method_: **PUT** `/orders/{id}`
+_Content-Type_: application/vnd.order.queue.v1+json
+
+#### Get the bill of an order
+
+_Method_: **GET** `/orders/{id}`
+_Response_: The bill of the order with the given id
 
 ### Contributors
 - [Lucía Digon](https://github.com/ludigon)
