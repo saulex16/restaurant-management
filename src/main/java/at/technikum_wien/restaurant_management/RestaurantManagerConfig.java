@@ -1,6 +1,9 @@
 package at.technikum_wien.restaurant_management;
 
 import at.technikum_wien.restaurant_management.model.notifications.*;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,15 +13,8 @@ import java.util.List;
 public class RestaurantManagerConfig {
 
     @Bean
-    public Notifier notifier(List<Observer<?>> observers){
-        Notifier notifier = new Notifier();
-        for(Observer<?> observer:observers){
-            for(NotificationType type: observer.getNotificationTypes()){
-                notifier.subscribe(type, observer);
-            }
-        }
-
-        return notifier;
+    public Notifier notifier(){
+        return new Notifier();
     }
 
     @Bean

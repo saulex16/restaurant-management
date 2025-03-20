@@ -33,6 +33,11 @@ public class WarehouseServiceImpl implements WarehouseService, Observer<Stock> {
         this.notifier = notifier;
         this.outOfStockNotificationFactory = outOfStockNotificationFactory;
         this.addedStockNotificationFactory = addedStockNotificationFactory;
+
+        List<NotificationType> notificationTypes = this.getNotificationTypes();
+        for (NotificationType type: notificationTypes){
+            notifier.subscribe(type, this);
+        }
     }
 
 

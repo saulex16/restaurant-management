@@ -2,6 +2,13 @@
 An implementation of a restaurant management system to put OOP design patterns into practice.
 This project was developed as part of the **Application or use cases of various design patterns** course at **FH Technikum Wien**.
 
+## Build Project
+The project requires `Java 21` version.
+
+Inside the project directory run `mvn clean package` to build the project.
+
+## Run Project
+Inside the project directory run `java -jar target/restaurant-management-0.0.1-SNAPSHOT.jar`
 ## Endpoints
 ### Restaurants
 #### Create a new restaurant
@@ -57,6 +64,249 @@ _Body_:
 }
 ```
 _Response:_ The id of the created table
+
+### Ingredients
+
+#### Create a new ingredient
+
+_Method_: **POST** `/ingredients`\
+_Body_:
+
+```json
+{
+    "name": "The name of the ingredient",
+    "price": "The cost of the ingredient"
+}
+```
+
+_Response_:
+
+```json
+{
+    "id": "The unique identifier of the ingredient",
+    "name": "The name of the ingredient",
+    "price": "The cost of the ingredient"
+}
+```
+
+####  Get ingredient by id
+
+_Method_: **GET** `/ingredients/{id}`\
+_Response_:
+
+```json
+{
+    "id": "The unique identifier of the ingredient",
+    "name": "The name of the ingredient",
+    "price": "The cost of the ingredient"
+}
+```
+
+_Response if not found_: `404 Not Found`
+
+#### Update an ingredient
+
+_Method_: **PUT** `/ingredients/{id}`\
+_Body_:
+
+```json
+{
+    "name": "The updated name of the ingredient",
+    "price": "The updated cost of the ingredient"
+}
+```
+
+_Response_:
+
+```json
+{
+    "id": "The unique identifier of the ingredient",
+    "name": "The updated name of the ingredient",
+    "price": "The updated cost of the ingredient"
+}
+```
+
+_Response if not found_: `404 Not Found`
+
+#### Delete an ingredient
+
+_Method_: **DELETE** `/ingredients/{id}`\
+_Response_: `204 No Content`\
+_Response if not found_: `404 Not Found`
+
+
+
+### Dishes
+
+#### Create a dish
+
+_Method_: **POST** `/restaurants/{restaurantId}/dishes`  
+_Body_:
+```json
+{
+    "name": "The name of the dish",
+    "baseIngredientsIds": "List of IDs of base ingredients required for the dish",
+    "optionalIngredientsIds": "List of IDs of optional ingredients that can be added",
+    "durationInMinutes": "The preparation time of the dish in minutes",
+    "markup": "The profit margin applied to the dish price"
+}
+```
+_Response_:
+```json
+{
+    "name": "The name of the dish",
+    "baseIngredientsIds": "List of IDs of base ingredients required for the dish",
+    "optionalIngredientsIds": "List of IDs of optional ingredients that can be added",
+    "durationInMinutes": "The preparation time of the dish in minutes",
+    "markup": "The profit margin applied to the dish price"
+}
+```
+
+#### Get all dishes
+
+_Method_: **GET** `/restaurants/{restaurantId}/dishes`  
+_Response_:
+```json
+[
+    {
+        "name": "The name of the dish",
+        "baseIngredientsIds": "List of IDs of base ingredients required for the dish",
+        "optionalIngredientsIds": "List of IDs of optional ingredients that can be added",
+        "durationInMinutes": "The preparation time of the dish in minutes",
+        "markup": "The profit margin applied to the dish price"
+    }
+]
+```
+_Response if not found_: `404 Not Found`
+
+#### Get a dish by id
+
+_Method_: **GET** `/restaurants/{restaurantId}/dishes/{id}`  
+_Response_:
+```json
+{
+    "name": "The name of the dish",
+    "baseIngredientsIds": "List of IDs of base ingredients required for the dish",
+    "optionalIngredientsIds": "List of IDs of optional ingredients that can be added",
+    "durationInMinutes": "The preparation time of the dish in minutes",
+    "markup": "The profit margin applied to the dish price"
+}
+```
+_Response if not found_: `404 Not Found`
+
+#### Update a dish
+
+_Method_: **PUT** `/restaurants/{restaurantId}/dishes/{id}`  
+_Body_:
+```json
+{
+    "name": "The updated name of the dish",
+    "baseIngredientsIds": "Updated list of base ingredient IDs",
+    "optionalIngredientsIds": "Updated list of optional ingredient IDs",
+    "durationInMinutes": "Updated preparation time in minutes",
+    "markup": "Updated profit margin applied to the dish price"
+}
+```
+_Response_:
+```json
+{
+    "name": "The updated name of the dish",
+    "baseIngredientsIds": "Updated list of base ingredient IDs",
+    "optionalIngredientsIds": "Updated list of optional ingredient IDs",
+    "durationInMinutes": "Updated preparation time in minutes",
+    "markup": "Updated profit margin applied to the dish price"
+}
+```
+_Response if not found_: `404 Not Found`
+
+#### Delete a dish
+
+_Method_: **DELETE** `/restaurants/{restaurantId}/dishes/{id}`  
+_Response_: `204 No Content`  
+_Response if not found_: `404 Not Found`
+
+### Warehouse
+#### Create a warehouse
+
+_Method_: **POST** `/restaurants/{restaurantId}/warehouse`  
+_Response_:
+```json
+{
+    "id": "The unique identifier of the warehouse",
+    "stock": "List of stock item IDs stored in the warehouse",
+    "restaurant": "The restaurant associated with this warehouse"
+}
+```
+
+#### Get a warehouse by id
+
+_Method_: **GET** `/restaurants/{restaurantId}/warehouse/{id}`  
+_Response_:
+```json
+{
+    "id": "The unique identifier of the warehouse",
+    "stock": "List of stock item IDs stored in the warehouse",
+    "restaurant": "The restaurant associated with this warehouse"
+}
+```
+_Response if not found_: `404 Not Found`
+
+#### Create stock in a warehouse
+
+_Method_: **POST** `/restaurants/{restaurantId}/warehouse/{warehouseId}/stock`  
+_Body_:
+```json
+{
+    "ingredient": "The unique identifier of the ingredient",
+    "quantity": "The amount of this ingredient available in stock",
+    "warehouse": "The unique identifier of the warehouse where this stock is stored"
+}
+```
+_Response_:
+```json
+{
+    "id": "The unique identifier of the stock item",
+    "ingredient": "The unique identifier of the ingredient",
+    "quantity": "The amount of this ingredient available in stock",
+    "warehouse": "The unique identifier of the warehouse where this stock is stored"
+}
+```
+_Response if not found_: `400 Bad Request` if the ingredient does not exist
+
+#### Get stock by id
+
+_Method_: **GET** `/restaurants/{restaurantId}/warehouse/{warehouseId}/stock/{stockId}`  
+_Response_:
+```json
+{
+    "id": "The unique identifier of the stock item",
+    "ingredient": "The unique identifier of the ingredient",
+    "quantity": "The amount of this ingredient available in stock",
+    "warehouse": "The unique identifier of the warehouse where this stock is stored"
+}
+```
+_Response if not found_: `404 Not Found`
+
+#### Add stock to an existing ingredient
+
+_Method_: **PUT** `/restaurants/{restaurantId}/warehouse/{warehouseId}/stock/{stockId}`  
+_Body_:
+```json
+{
+    "quantity": "The amount to add to the current stock"
+}
+```
+_Response_:
+```json
+{
+    "id": "The unique identifier of the stock item",
+    "ingredient": "The unique identifier of the ingredient",
+    "quantity": "The updated amount of this ingredient available in stock",
+    "warehouse": "The unique identifier of the warehouse where this stock is stored"
+}
+```
+_Response if not found_: `404 Not Found`
+
 
 
 ### Orders

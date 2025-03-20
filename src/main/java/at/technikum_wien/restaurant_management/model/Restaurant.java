@@ -49,8 +49,7 @@ public class Restaurant {
     @JoinColumn(name = "warehouse_id", referencedColumnName = "id")
     private Warehouse warehouse;
 
-    @OneToMany
-    @JoinColumn(name = "restaurant_id")
+    @OneToMany(mappedBy = "restaurant")
     private List<Order> orders;
 
     public Restaurant() {}

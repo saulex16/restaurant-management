@@ -7,6 +7,7 @@ import at.technikum_wien.restaurant_management.model.dishes.StockNotificationDis
 import at.technikum_wien.restaurant_management.model.dishes.StrategyManager;
 import at.technikum_wien.restaurant_management.model.notifications.Notification;
 import at.technikum_wien.restaurant_management.model.notifications.NotificationType;
+import at.technikum_wien.restaurant_management.model.notifications.Notifier;
 import at.technikum_wien.restaurant_management.model.notifications.Observer;
 import at.technikum_wien.restaurant_management.model.stock.Stock;
 import at.technikum_wien.restaurant_management.repository.interfaces.DishRepository;
@@ -26,12 +27,19 @@ public class DishServiceImpl implements DishService, Observer<Stock> {
 
     private final IngredientRepository ingredientRepository;
     private final StrategyManager strategyManager;
+    private final Notifier notifier;
 
     @Autowired
-    public DishServiceImpl(DishRepository dishRepository, IngredientRepository ingredientRepository, StrategyManager strategyManager ) {
+    public DishServiceImpl(DishRepository dishRepository, IngredientRepository ingredientRepository, StrategyManager strategyManager, Notifier notifier) {
         this.dishRepository = dishRepository;
         this.ingredientRepository = ingredientRepository;
         this.strategyManager = strategyManager;
+        this.notifier = notifier;
+
+        List<NotificationType> notificationTypes = this.getNotificationTypes();
+        for (NotificationType type: notificationTypes){
+            notifier.subscribe(type, this);
+        }
     }
 
     @Override

@@ -31,7 +31,7 @@ public class Table implements Billable {
     private double price;
 
     @OneToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = true)
+    @JoinColumn(name = "order_id", referencedColumnName = "order_id", nullable = true)
     private Order order;
 
     @ManyToOne

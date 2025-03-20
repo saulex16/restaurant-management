@@ -56,6 +56,11 @@ public class OrderServiceImpl implements OrderService, Observer<Order> {
         this.orderedDishRepository = orderedDishRepository;
         this.notifier = notifier;
         this.newOrderNotificationFactory = newOrderNotificationFactory;
+
+        List<NotificationType> notificationTypes = this.getNotificationTypes();
+        for (NotificationType type: notificationTypes){
+            notifier.subscribe(type, this);
+        }
     }
 
     @Override

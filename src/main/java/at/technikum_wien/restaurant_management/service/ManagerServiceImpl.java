@@ -27,6 +27,11 @@ public class ManagerServiceImpl implements ManagerService, Observer<Stock> {
         this.taskScheduler = taskScheduler;
         this.addedStockNotificationFactory = addedStockNotificationFactory;
         this.notifier = notifier;
+
+        List<NotificationType> notificationTypes = this.getNotificationTypes();
+        for (NotificationType type: notificationTypes){
+            notifier.subscribe(type, this);
+        }
     }
 
 

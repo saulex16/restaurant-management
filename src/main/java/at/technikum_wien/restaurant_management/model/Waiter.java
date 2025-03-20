@@ -20,7 +20,7 @@ public class Waiter {
     private String name;
 
     @ManyToOne
-    @Column(name = "restaurant_id", nullable = false)
+    @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
     public Waiter(String name) {

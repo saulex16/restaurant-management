@@ -36,6 +36,11 @@ public class KitchenServiceImpl implements KitchenService, Observer<Order> {
         this.orderRepository = orderRepository;
         this.notifier = notifier;
         this.orderReadyNotificationFactory = orderReadyNotificationFactory;
+
+        List<NotificationType> notificationTypes = this.getNotificationTypes();
+        for (NotificationType type: notificationTypes){
+            notifier.subscribe(type, this);
+        }
     }
 
     @Override
