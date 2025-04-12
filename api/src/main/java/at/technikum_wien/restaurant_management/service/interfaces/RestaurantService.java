@@ -1,6 +1,7 @@
 package at.technikum_wien.restaurant_management.service.interfaces;
 
 import at.technikum_wien.restaurant_management.model.Restaurant;
+import at.technikum_wien.restaurant_management.model.stock.Stock;
 import at.technikum_wien.restaurant_management.model.tables.TableType;
 import org.springframework.stereotype.Service;
 
@@ -15,4 +16,6 @@ public interface RestaurantService {
 
     long addBasicTable(final long restaurantId, final String tableName);
     long addVipTable(final long restaurantId, final String tableName);
+
+    List<Stock> getAllNonEmptyStocksByRestaurantId(final long restaurantId);
 }

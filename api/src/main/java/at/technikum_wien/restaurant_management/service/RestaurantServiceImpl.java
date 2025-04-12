@@ -4,6 +4,7 @@ import at.technikum_wien.restaurant_management.model.Kitchen;
 import at.technikum_wien.restaurant_management.model.Manager;
 import at.technikum_wien.restaurant_management.model.Restaurant;
 import at.technikum_wien.restaurant_management.model.Waiter;
+import at.technikum_wien.restaurant_management.model.stock.Stock;
 import at.technikum_wien.restaurant_management.model.tables.BasicTable;
 import at.technikum_wien.restaurant_management.model.tables.Table;
 import at.technikum_wien.restaurant_management.model.tables.TableType;
@@ -130,5 +131,14 @@ public class RestaurantServiceImpl implements RestaurantService {
         }
         Table newTable = new VipTable(tableName, vipTablePrice);
         return addTable(restaurant, newTable).getId();
+    }
+
+    @Override
+    public List<Stock> getAllNonEmptyStocksByRestaurantId(long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new IllegalArgumentException("Restaurant not found"));
+        List<Stock> stocks = restaurant.getWarehouse().getStock();
+        return stocks.stream()
+                .filter(stock -> stock.getQuantity() > 0)
+                .toList();
     }
 }

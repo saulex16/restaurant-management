@@ -3,13 +3,17 @@ package at.technikum_wien.restaurant_management.controller;
 import at.technikum_wien.restaurant_management.dtos.AddTableDto;
 import at.technikum_wien.restaurant_management.dtos.CreateRestaurantDto;
 import at.technikum_wien.restaurant_management.dtos.VipTablePriceDto;
+import at.technikum_wien.restaurant_management.model.Ingredient;
 import at.technikum_wien.restaurant_management.model.Restaurant;
+import at.technikum_wien.restaurant_management.model.stock.Stock;
 import at.technikum_wien.restaurant_management.service.interfaces.RestaurantService;
 import at.technikum_wien.restaurant_management.utils.Endpoints;
 import at.technikum_wien.restaurant_management.vnd_type.VndType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -73,4 +77,14 @@ public class RestaurantController {
         return tableId;
     }
 
+    @GetMapping(path = "/{id}/stocks")
+    public ResponseEntity<List<String>> getAllNonEmptyStocksByRestaurantId(
+            @PathVariable Long id) {
+        List<Stock> stocks = restaurantService.getAllNonEmptyStocksByRestaurantId(id);
+        List<String> stockNames = stocks.stream()
+                .map(Stock::getIngredient)
+                .map(Ingredient::getName)
+                .toList();
+        return ResponseEntity.ok(stockNames);
+    }
 }
