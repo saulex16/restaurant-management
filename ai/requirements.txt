@@ -1,0 +1,13 @@
+langchain
+langchain-community
+langchain-text-splitters
+langchain-google-genai
+langchain-postgres
+fastapi~=0.115.12
+uvicorn
+python-multipart
+requests~=2.32.3
+SQLAlchemy~=2.0.40
+python-dotenv
+apscheduler
+httpx
