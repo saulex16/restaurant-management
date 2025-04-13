@@ -6,6 +6,8 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, GoogleGenerativ
 from langchain_postgres import PGVector
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from db.pgvector import engine
+from recipe_uploader import RecipeUploader
+
 
 class RAGService(ABC):
 
@@ -23,6 +25,9 @@ class RAGService(ABC):
 
 
 class RAGServiceImpl(RAGService):
+
+    def __init__(self):
+        self.uploader = RecipeUploader()
 
     def send_command(self, command: str):
         pass
@@ -42,11 +47,13 @@ class RAGServiceImpl(RAGService):
         result = qa_chain({"query": user_query})
         return result["result"]
 
-    def upload_document(self, document: str):
-        vectorstore =self._create_vector_store()
-        chunked_documents = self._load_documents(document)
+    def upload_document(self, document_path: str):
+        self.uploader.upload_document(document_path)
 
-        vectorstore.add_documents(chunked_documents)
+        # vectorstore =self._create_vector_store()
+        # chunked_documents = self._load_documents(document)
+        #
+        # vectorstore.add_documents(chunked_documents)
     def _create_vector_store(self):
         embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
         vectorstore = PGVector(
@@ -57,14 +64,14 @@ class RAGServiceImpl(RAGService):
         )
 
         return vectorstore
-
-    def _load_documents(self, document):
-        loader = PyPDFLoader(document)
-        splitter = RecursiveCharacterTextSplitter(
-            chunk_size=300,
-            chunk_overlap=50,
-            length_function=len,
-            is_separator_regex=False,
-        )
-        documents = loader.load_and_split(text_splitter=splitter)
-        return documents
+    #
+    # def _load_documents(self, document):
+    #     loader = PyPDFLoader(document)
+    #     splitter = RecursiveCharacterTextSplitter(
+    #         chunk_size=300,
+    #         chunk_overlap=50,
+    #         length_function=len,
+    #         is_separator_regex=False,
+    #     )
+    #     documents = loader.load_and_split(text_splitter=splitter)
+    #     return documents

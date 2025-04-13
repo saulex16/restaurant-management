@@ -1,7 +1,7 @@
 from gateways.restaurant_management_api_gateway import RestaurantManagementApiGateway
 from collections.abc import Callable, Awaitable
 from fastapi import Response, HTTPException
-from api import scheduler
+from scheduler import scheduler
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 from httpx import TimeoutException, RequestError
