@@ -6,13 +6,14 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, GoogleGenerativ
 from langchain_postgres import PGVector
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from db.pgvector import engine
+from recipe_command_processor import RecipeCommandProcessor
 from recipe_uploader import RecipeUploader
 
 
 class RAGService(ABC):
 
     @abstractmethod
-    def send_command(self, command: str):
+    async def send_command(self, command: str):
         pass
 
     @abstractmethod
@@ -28,9 +29,11 @@ class RAGServiceImpl(RAGService):
 
     def __init__(self):
         self.uploader = RecipeUploader()
+        self.command_processor = RecipeCommandProcessor()
 
-    def send_command(self, command: str):
-        pass
+    async def send_command(self, command: str):
+        answer = await self.command_processor.send_command(command)
+        return answer
 
     def make_query(self, user_query: str):
         vectorstore = self._create_vector_store()
@@ -50,10 +53,6 @@ class RAGServiceImpl(RAGService):
     def upload_document(self, document_path: str):
         self.uploader.upload_document(document_path)
 
-        # vectorstore =self._create_vector_store()
-        # chunked_documents = self._load_documents(document)
-        #
-        # vectorstore.add_documents(chunked_documents)
     def _create_vector_store(self):
         embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
         vectorstore = PGVector(

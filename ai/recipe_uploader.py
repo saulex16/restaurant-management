@@ -1,5 +1,4 @@
 import hashlib
-import re
 
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_postgres import PGVector
@@ -11,34 +10,23 @@ from db.pgvector import engine
 
 import json
 
+from utils import extract_json_from_llm_output
+
 
 def generate_id(text: str) -> str:
     return hashlib.md5(text.encode()).hexdigest()
 
 
-def extract_json_from_llm_output(text: str):
-    match = re.search(r"```json\s*(\[.*?\]|\{.*?\})\s*```", text, re.DOTALL)
-    if match:
-        cleaned = match.group(1)
-        return json.loads(cleaned)
-
-    match = re.search(r"(\[.*\]|\{.*\})", text, re.DOTALL)
-    if match:
-        return json.loads(match.group(1))
-
-    raise ValueError("A valid JSON was not found in the LLM's response.")
-
-
 class RecipeUploader:
-    def __init__(self, collection_name="recipes"):
-        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+    def __init__(self):
+        embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
         self.llm = ChatGoogleGenerativeAI(model="models/gemini-2.0-flash",
                                           response_format="json",
                                           convert_system_message_to_human=True)
         self.vectorstore = PGVector(
             connection=engine,
-            embeddings=self.embeddings,
-            collection_name=collection_name,
+            embeddings=embeddings,
+            collection_name="recipes",
         )
         self.splitter = RecursiveCharacterTextSplitter(
             chunk_size=5000,
@@ -52,12 +40,16 @@ class RecipeUploader:
             "The following text contains one or more cooking recipes.\n"
             "Extract the recipes in JSON format using the following schema:\n"
             "[\n"
-            "  {\"title\": \"Recipe name\", \"content\": \"Full recipe text\"},\n"
+            "  {\n"
+            "    \"title\": \"Recipe name\",\n"
+            "    \"ingredients\": [\"ingredient 1\", \"ingredient 2\", ...],\n"
+            "    \"content\": \"Full received text in \'Text:\'\"\n"
+            "  },\n"
             "  ...\n"
             "]\n\n"
             "Text:\n"
             f"{chunk}\n\n"
-            "Respond only with a valid JSON, without explanations, without additional text, without Markdown formatting, without labels. "
+            "Respond only with a valid JSON, without explanations, without additional text, without Markdown formatting, and without labels. "
             "ONLY the JSON. Do not include 'Answer:', triple quotes, or code blocks."
         )
 

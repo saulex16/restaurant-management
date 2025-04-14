@@ -81,3 +81,6 @@ class RestaurantManagementApiService:
                 ingredient_ids.append(ingredient_id)
             await self.gateway.post("/recepts", {'name': recept_name, 'ingredients': ingredient_ids})
         return await self.handle_request(request)
+
+    async def get_stocks_by_id(self):
+        return ["pasta", "butter", "potatoes", "salt", "milk", "rice", "water"]
