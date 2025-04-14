@@ -1,4 +1,3 @@
-version: "3.9"
 
 services:
   pgvector-db:
@@ -28,3 +27,11 @@ services:
         condition: service_healthy
     env_file:
       - ai/.env
+
+  java-api:
+      build:
+        context: ./api
+        dockerfile: Dockerfile
+      container_name: java-api
+      ports:
+        - "8080:8080"
