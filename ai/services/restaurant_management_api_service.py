@@ -70,17 +70,24 @@ class RestaurantManagementApiService:
             raise exception
 
 
-    async def add_recept(self, recept_name: str, recept_ingredients: list[str]):
-        # TODO: Chequear con la api de java los endpoint y que datos necesitan
-        async def request():
-            ingredient_ids = []
-            for ingredient in recept_ingredients:
-                response = await self.gateway.post("/ingredients", {'name': ingredient})
-                json = response.json()
-                ingredient_id = json['id']
-                ingredient_ids.append(ingredient_id)
-            await self.gateway.post("/recepts", {'name': recept_name, 'ingredients': ingredient_ids})
-        return await self.handle_request(request)
+    # async def add_recept(self, recept_name: str, recept_ingredients: list[str]):
+    #     # TODO: Chequear con la api de java los endpoint y que datos necesitan
+    #     async def request():
+    #         ingredient_ids = []
+    #         for ingredient in recept_ingredients:
+    #             response = await self.gateway.post("/ingredients", {'name': ingredient})
+    #             json = response.json()
+    #             ingredient_id = json['id']
+    #             ingredient_ids.append(ingredient_id)
+    #         await self.gateway.post("/recepts", {'name': recept_name, 'ingredients': ingredient_ids})
+    #     return await self.handle_request(request)
 
-    async def get_stocks_by_id(self):
-        return ["pasta", "butter", "potatoes", "salt", "milk", "rice", "water"]
+    async def get_stocks_by_id(self, restaurant_id: int):
+        async def request():
+            response = await self.gateway.get(f"/restaurants/{restaurant_id}/stocks")
+            if not (200 <= response.status_code < 300):
+                raise HTTPException(status_code=500, detail='Cannot fetch the restaurant stocks')
+            json = await response.json()
+            return json
+        # return ["pasta", "butter", "potatoes", "salt", "milk", "rice", "water"]
+        return await self.handle_request(request)

@@ -40,7 +40,7 @@ async def chat(request: ChatRequest, service: RAGService = Depends(get_rag_servi
     answer = service.make_query(request.message)
     return {"answer": answer}
 
-@app.post("/command/")
-async def command(service: RAGService = Depends(get_rag_service)):
-    answer = await service.send_command("listar recetas posibles")
+@app.post("/command/{restaurant_id}")
+async def command(restaurant_id: int, service: RAGService = Depends(get_rag_service)):
+    answer = await service.send_command(restaurant_id, "listar recetas posibles")
     return {"answer": answer}
