@@ -14,6 +14,7 @@ import at.technikum_wien.restaurant_management.service.interfaces.RestaurantServ
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,9 +73,13 @@ public class RestaurantServiceImpl implements RestaurantService {
     public Restaurant createRestaurant(String name, String managerName, int kitchenLimit, List<String> waiterNames, Optional<Double> vipTablePrice) {
         Manager manager = createAndGetManager(managerName);
         Kitchen kitchen = createAndGetKitchen(kitchenLimit);
-        List<Waiter> waiters = createAndGetWaiters(waiterNames);
-        Restaurant restaurant = new Restaurant(name, manager, kitchen, waiters, vipTablePrice);
-        return restaurantRepository.save(restaurant);
+
+        Restaurant restaurant = new Restaurant(name, manager, kitchen, new ArrayList<>(), vipTablePrice);
+        restaurant = restaurantRepository.save(restaurant);
+        Restaurant finalRestaurant = restaurant;
+        waiterNames.forEach(wName -> this.addWaiter(finalRestaurant.getId(), wName));
+
+        return finalRestaurant;
     }
 
     @Override
@@ -85,6 +90,7 @@ public class RestaurantServiceImpl implements RestaurantService {
             throw new IllegalArgumentException("Waiter already exists");
         }
         Waiter waiter = new Waiter(waiterName);
+        waiter.setRestaurant(restaurant);
         Waiter savedWaiter = waiterRepository.save(waiter);
         restaurant.getWaiters().add(waiter);
         restaurantRepository.save(restaurant);
