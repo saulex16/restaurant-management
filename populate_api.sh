@@ -29,27 +29,31 @@ if [[ -n "$RESTAURANT_ID" ]]; then
 
   echo "Agregando ingredientes..."
 
+  # Define cantidades para cada ingrediente
   declare -A INGREDIENTS_MAP
-  INGREDIENTS_MAP["Tomato"]=10
-  INGREDIENTS_MAP["Mozzarella"]=5
-  INGREDIENTS_MAP["Basil"]=3
-  INGREDIENTS_MAP["Olive Oil"]=4
-  INGREDIENTS_MAP["Flour"]=6
+  INGREDIENTS_MAP["Eggs"]=12
+  INGREDIENTS_MAP["Milk"]=8
+  INGREDIENTS_MAP["Salt"]=5
+  INGREDIENTS_MAP["Butter"]=4
+  INGREDIENTS_MAP["Oil"]=6
+  INGREDIENTS_MAP["Water"]=20
 
   declare -A INGREDIENT_IDS
 
   for NAME in "${!INGREDIENTS_MAP[@]}"; do
+    # Precios definidos para los nuevos ingredientes
     PRICE=$(awk -v name="$NAME" '
       BEGIN {
-        prices["Tomato"] = 0.5;
-        prices["Mozzarella"] = 1.2;
-        prices["Basil"] = 0.3;
-        prices["Olive Oil"] = 1.0;
-        prices["Flour"] = 0.8;
+        prices["Eggs"] = 0.2;
+        prices["Milk"] = 0.6;
+        prices["Salt"] = 0.1;
+        prices["Butter"] = 1.5;
+        prices["Oil"] = 1.2;
+        prices["Water"] = 0.05;
         print prices[name];
       }')
 
-    echo "Creando ingrediente $NAME..."
+    echo "Creando ingrediente $NAME (precio: $PRICE)..."
 
     INGREDIENT_RESPONSE=$(curl -s -X POST http://localhost:8080/ingredients \
       -H "Content-Type: application/json" \
