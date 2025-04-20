@@ -27,6 +27,8 @@ services:
         condition: service_healthy
     env_file:
       - ai/.env
+    expose:
+      - "8000"
 
   java-api:
       build:

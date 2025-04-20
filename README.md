@@ -1,317 +1,57 @@
-# Restaurant Management Spring Boot Application
-An implementation of a restaurant management system to put OOP design patterns into practice.
+# Restaurant Management with AI-powered Recipe Suggestions
+An extension to the Restaurant Management API that allows to ask a RAG service to suggest recipes to add to the menu. After loading a PDF file with a list of recipes to its vectorial DB, the RAG fetches the available ingredients in the warehouse and offer feasible options.  
 This project was developed as part of the **Application or use cases of various design patterns** course at **FH Technikum Wien**.
 
-## Build Project
-The project requires `Java 21` version.
+## Set-up
+Requirements:
+- Docker Engine  
 
-Inside the project directory run `mvn clean package` to build the project.
 
-## Run Project
-Inside the project directory run `java -jar target/restaurant-management-0.0.1-SNAPSHOT.jar`
-## Endpoints
-### Restaurants
-#### Create a new restaurant
-_Method_: **POST** `/restaurants`  
-_Body_:
-```json
-{
-    "name": "Restaurant Name",
-    "managerName": "Manager Name",
-    "kitchenLimit": "The maximum number of orders that the kitchen can handle at the same time",
-    "waiterNames": "List of waiter names",
-    "vipTablePrice": "The price of a VIP table (optional)"
-}
-```
-_Response_: The id of the created restaurant
+### Docker Compose
+First, we need to start the containers for:
+* The Restaurant Management Java API
+* The vectorial DB for the RAG
+* The Recipe Suggester Python API  
 
-#### Get restaurant by id
-_Method_: **GET** `/restaurants/{id}`  
-_Response_: The restaurant with the given id
-
-#### Add a waiter to a restaurant
-_Method_: **POST** `/restaurants/{id}/waiters/{name}`  
-_Response_: The id of the created waiter
-
-#### Set the price of a VIP table
-_Method_: **POST** `/restaurants/{id}/tables/price`  
-_Content-Type_: application/vnd.table.vip.v1+json  
-_Body_:
-```json
-{
-    "vipTablePrice": "The price of a VIP table"
-}
+In a terminal, run the following command:
+```sh
+docker compose up --build -d
 ```
 
-#### Create a basic table
-_Method_: **POST** `/restaurants/{id}/tables`    
-_Content-Type_: application/vnd.table.basic.v1+json  
-_Body_:
-```json
-{
-    "tableName": "Table Name",
-}
-```
-_Response:_ The id of the created table
+**Make sure the port 8080 is opened in your computer**
 
-#### Create a VIP table
-_Method_: **POST** `/restaurants/{id}/tables`  
-_Content-Type_: application/vnd.table.vip.v1+json  
-_Body_:
-```json
-{
-    "tableName": "Table Name"
-}
-```
-_Response:_ The id of the created table
+### Populate the Restaurant Management API
+The _populate\_api.sh_ file creates a restaurant and some ingredients with stock.  
 
-### Ingredients
-
-#### Create a new ingredient
-
-_Method_: **POST** `/ingredients`\
-_Body_:
-
-```json
-{
-    "name": "The name of the ingredient",
-    "price": "The cost of the ingredient"
-}
+In a terminal, run the following command:
+```sh
+./populate_api.sh
 ```
 
-_Response_:
-
-```json
-{
-    "id": "The unique identifier of the ingredient",
-    "name": "The name of the ingredient",
-    "price": "The cost of the ingredient"
-}
+### Populate the vectorial DB
+The _multiple\_simple\_recipes.pdf_ file includes multiple recipes, each one of the them indicating the needed ingredients.  
+Using a HTTP client (Postman, cURL, etc), upload the file to the vectorial DB through the Python API.  
+```sh
+curl -X POST "http://localhost:8000/upload/" \
+  -F "file=@multiple_simple_recipes.pdf"
 ```
 
-####  Get ingredient by id
-
-_Method_: **GET** `/ingredients/{id}`\
-_Response_:
-
-```json
-{
-    "id": "The unique identifier of the ingredient",
-    "name": "The name of the ingredient",
-    "price": "The cost of the ingredient"
-}
+## Usage
+### Chat
+Start a conversation with a LLM using the PDF files as its sources.
+```sh
+curl -X POST "http://localhost:8000/chat/" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Your question goes here"}'
 ```
 
-_Response if not found_: `404 Not Found`
-
-#### Update an ingredient
-
-_Method_: **PUT** `/ingredients/{id}`\
-_Body_:
-
-```json
-{
-    "name": "The updated name of the ingredient",
-    "price": "The updated cost of the ingredient"
-}
+### Command
+Receive recipes that can be added to the menu given the current available ingredients in the warehouse.
+```sh
+curl -X POST "http://localhost:8000/command/{RESTAURANT_ID}"
 ```
 
-_Response_:
-
-```json
-{
-    "id": "The unique identifier of the ingredient",
-    "name": "The updated name of the ingredient",
-    "price": "The updated cost of the ingredient"
-}
-```
-
-_Response if not found_: `404 Not Found`
-
-#### Delete an ingredient
-
-_Method_: **DELETE** `/ingredients/{id}`\
-_Response_: `204 No Content`\
-_Response if not found_: `404 Not Found`
-
-
-
-### Dishes
-
-#### Create a dish
-
-_Method_: **POST** `/restaurants/{restaurantId}/dishes`  
-_Body_:
-```json
-{
-    "name": "The name of the dish",
-    "baseIngredientsIds": "List of IDs of base ingredients required for the dish",
-    "optionalIngredientsIds": "List of IDs of optional ingredients that can be added",
-    "durationInMinutes": "The preparation time of the dish in minutes",
-    "markup": "The profit margin applied to the dish price"
-}
-```
-_Response_:
-```json
-{
-    "name": "The name of the dish",
-    "baseIngredientsIds": "List of IDs of base ingredients required for the dish",
-    "optionalIngredientsIds": "List of IDs of optional ingredients that can be added",
-    "durationInMinutes": "The preparation time of the dish in minutes",
-    "markup": "The profit margin applied to the dish price"
-}
-```
-
-#### Get all dishes
-
-_Method_: **GET** `/restaurants/{restaurantId}/dishes`  
-_Response_:
-```json
-[
-    {
-        "name": "The name of the dish",
-        "baseIngredientsIds": "List of IDs of base ingredients required for the dish",
-        "optionalIngredientsIds": "List of IDs of optional ingredients that can be added",
-        "durationInMinutes": "The preparation time of the dish in minutes",
-        "markup": "The profit margin applied to the dish price"
-    }
-]
-```
-_Response if not found_: `404 Not Found`
-
-#### Get a dish by id
-
-_Method_: **GET** `/restaurants/{restaurantId}/dishes/{id}`  
-_Response_:
-```json
-{
-    "name": "The name of the dish",
-    "baseIngredientsIds": "List of IDs of base ingredients required for the dish",
-    "optionalIngredientsIds": "List of IDs of optional ingredients that can be added",
-    "durationInMinutes": "The preparation time of the dish in minutes",
-    "markup": "The profit margin applied to the dish price"
-}
-```
-_Response if not found_: `404 Not Found`
-
-#### Update a dish
-
-_Method_: **PUT** `/restaurants/{restaurantId}/dishes/{id}`  
-_Body_:
-```json
-{
-    "name": "The updated name of the dish",
-    "baseIngredientsIds": "Updated list of base ingredient IDs",
-    "optionalIngredientsIds": "Updated list of optional ingredient IDs",
-    "durationInMinutes": "Updated preparation time in minutes",
-    "markup": "Updated profit margin applied to the dish price"
-}
-```
-_Response_:
-```json
-{
-    "name": "The updated name of the dish",
-    "baseIngredientsIds": "Updated list of base ingredient IDs",
-    "optionalIngredientsIds": "Updated list of optional ingredient IDs",
-    "durationInMinutes": "Updated preparation time in minutes",
-    "markup": "Updated profit margin applied to the dish price"
-}
-```
-_Response if not found_: `404 Not Found`
-
-#### Delete a dish
-
-_Method_: **DELETE** `/restaurants/{restaurantId}/dishes/{id}`  
-_Response_: `204 No Content`  
-_Response if not found_: `404 Not Found`
-
-### Warehouse
-#### Create a warehouse
-
-_Method_: **POST** `/restaurants/{restaurantId}/warehouse`  
-_Response_:
-```json
-{
-    "id": "The unique identifier of the warehouse",
-    "stock": "List of stock item IDs stored in the warehouse",
-    "restaurant": "The restaurant associated with this warehouse"
-}
-```
-
-#### Get a warehouse by id
-
-_Method_: **GET** `/restaurants/{restaurantId}/warehouse/{id}`  
-_Response_:
-```json
-{
-    "id": "The unique identifier of the warehouse",
-    "stock": "List of stock item IDs stored in the warehouse",
-    "restaurant": "The restaurant associated with this warehouse"
-}
-```
-_Response if not found_: `404 Not Found`
-
-#### Create stock in a warehouse
-
-_Method_: **POST** `/restaurants/{restaurantId}/warehouse/{warehouseId}/stock`  
-_Body_:
-```json
-{
-    "ingredient": "The unique identifier of the ingredient",
-    "quantity": "The amount of this ingredient available in stock",
-    "warehouse": "The unique identifier of the warehouse where this stock is stored"
-}
-```
-_Response_:
-```json
-{
-    "id": "The unique identifier of the stock item",
-    "ingredient": "The unique identifier of the ingredient",
-    "quantity": "The amount of this ingredient available in stock",
-    "warehouse": "The unique identifier of the warehouse where this stock is stored"
-}
-```
-_Response if not found_: `400 Bad Request` if the ingredient does not exist
-
-#### Get stock by id
-
-_Method_: **GET** `/restaurants/{restaurantId}/warehouse/{warehouseId}/stock/{stockId}`  
-_Response_:
-```json
-{
-    "id": "The unique identifier of the stock item",
-    "ingredient": "The unique identifier of the ingredient",
-    "quantity": "The amount of this ingredient available in stock",
-    "warehouse": "The unique identifier of the warehouse where this stock is stored"
-}
-```
-_Response if not found_: `404 Not Found`
-
-#### Add stock to an existing ingredient
-
-_Method_: **PUT** `/restaurants/{restaurantId}/warehouse/{warehouseId}/stock/{stockId}`  
-_Body_:
-```json
-{
-    "quantity": "The amount to add to the current stock"
-}
-```
-_Response_:
-```json
-{
-    "id": "The unique identifier of the stock item",
-    "ingredient": "The unique identifier of the ingredient",
-    "quantity": "The updated amount of this ingredient available in stock",
-    "warehouse": "The unique identifier of the warehouse where this stock is stored"
-}
-```
-_Response if not found_: `404 Not Found`
-
-
-
-### Orders
-
-
+---
 
 ### Contributors
 - [Lucía Digon](https://github.com/ludigon)
