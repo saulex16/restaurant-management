@@ -68,7 +68,7 @@ class RecipeUploader:
             for rid, recipe in enumerate(recipes):
                 doc = Document(
                     page_content=recipe["content"],
-                    metadata={"title": recipe["title"]},
+                    metadata={"title": recipe["title"], "ingredients": recipe["ingredients"]},
                 )
                 all_documents.append((doc, f"chunk{idx}_recipe{rid}"))
 

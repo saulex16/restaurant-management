@@ -42,7 +42,7 @@ class RecipeCommandProcessor:
 
         if not docs:
             LOG.error("No matching recipes found in the vectorstore.")
-            return
+            return "No matching recipes found."
 
         recipes = []
         for doc in docs:
@@ -52,11 +52,15 @@ class RecipeCommandProcessor:
                 "ingredients": metadata.get("ingredients", [])
             })
 
+        LOG.debug(f"Similar recipes in vectorstore: {recipes}")
+
         prompt = self.prompt_manager.get_recipe_recommendation_prompt(
             ingredients=ingredients_stock,
             recipes=recipes
         )
         response = self.llm.invoke(prompt)
+
+        LOG.debug(f"LLM response: {response.content}")
 
         try:
             result = json.loads(response.content)

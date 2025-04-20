@@ -79,7 +79,7 @@ class RestaurantManagementApiService:
             response = await self.gateway.get(f"/restaurants/{restaurant_id}/stocks")
             if not (200 <= response.status_code < 300):
                 raise HTTPException(status_code=500, detail='Cannot fetch the restaurant stocks')
-            json = await response.json()
+            json = response.json()
             return json
 
         # return ["pasta", "butter", "potatoes", "salt", "milk", "rice", "water"]
