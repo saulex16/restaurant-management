@@ -1,7 +1,8 @@
 import tempfile
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, UploadFile, File, Depends
-from models.requests import ChatRequest
+
+from models.requests import ChatRequest, CommandRequest
 from services.rag_service import RagService
 import utils
 from scheduler import scheduler
@@ -40,8 +41,8 @@ async def upload_file(file: UploadFile = File(...), service: RagService = Depend
         tmp.write(contents)
         tmp_path = tmp.name
 
-    result = service.upload_document(tmp_path)
-    return {"message": "Upload successful", "details": result}
+    service.upload_document(tmp_path)
+    return {"message": "Upload successful"}
 
 
 @app.post("/chat/")
@@ -51,6 +52,6 @@ async def chat(request: ChatRequest, service: RagService = Depends(get_rag_servi
 
 
 @app.post("/command/{restaurant_id}")
-async def command(restaurant_id: int, service: RagService = Depends(get_rag_service)):
-    answer = await service.send_command(restaurant_id, "listar recetas posibles")
+async def command(request: CommandRequest, restaurant_id: int, service: RagService = Depends(get_rag_service)):
+    answer = await service.send_command(restaurant_id, request.command)
     return {"answer": answer}

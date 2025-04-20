@@ -1,0 +1,4 @@
+{
+  "extract_recipes": "The following text contains one or more cooking recipes.\nExtract the recipes in JSON format using the following schema:\n[\n  {\n    \"title\": \"Recipe name\",\n    \"ingredients\": [\"ingredient 1\", \"ingredient 2\", ...],\n    \"content\": \"Full received text in 'Text:'\"\n  },\n  ...\n]\n\nText:\n{{chunk}}\n\nRespond only with a valid JSON, without explanations, without additional text, without Markdown formatting, and without labels. ONLY the JSON. Do not include 'Answer:', triple quotes, or code blocks.",
+  "recipe_recommendation": "Given the following list of available ingredients:\n{{ingredients}}\n\nAnd the following list of recipes with their required ingredients:\n{{recipes}}\n\nList which recipes can be prepared with the current stock. Return only a JSON list of recipe titles like:\n[\"Garlic Bread\", \"Tomato Salad\"]\n\nONLY the JSON. No Markdown, no explanations, no extra text."
+}

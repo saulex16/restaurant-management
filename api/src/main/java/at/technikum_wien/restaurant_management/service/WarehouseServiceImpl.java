@@ -10,6 +10,7 @@ import at.technikum_wien.restaurant_management.repository.interfaces.WarehouseRe
 import at.technikum_wien.restaurant_management.service.interfaces.WarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +53,7 @@ public class WarehouseServiceImpl implements WarehouseService, Observer<Stock> {
     }
 
     @Override
+    @Transactional
     public Stock createStockForWarehouse(Ingredient ingredient, Long quantity, Long warehouseId) {
         return warehouseRepository.createStockForWarehouse(ingredient, quantity, warehouseId);
     }

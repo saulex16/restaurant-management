@@ -54,7 +54,7 @@ public class WarehouseController {
 
     @PostMapping("/{warehouseId}" + Endpoints.STOCK)
     public ResponseEntity<StockDto> createStock(@PathVariable Long warehouseId, @PathVariable Long restaurantId, @RequestBody StockDto stockDto){
-        Optional<Ingredient>  maybeIngredient = ingredientService.getIngredientById(stockDto.getId());
+        Optional<Ingredient>  maybeIngredient = ingredientService.getIngredientById(stockDto.getIngredient());
         if(maybeIngredient.isEmpty()){
             return ResponseEntity.badRequest().build();
         }

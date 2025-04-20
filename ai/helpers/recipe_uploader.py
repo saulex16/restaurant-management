@@ -10,6 +10,8 @@ from db.pgvector import engine
 
 import json
 
+from logger import LOG
+from models.rag.prompts import PromptManager
 from utils import extract_json_from_llm_output
 
 
@@ -19,9 +21,10 @@ def generate_id(text: str) -> str:
 
 class RecipeUploader:
     def __init__(self):
+        self.prompt_manager = PromptManager()
+
         embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
         self.llm = ChatGoogleGenerativeAI(model="models/gemini-2.0-flash",
-                                          response_format="json",
                                           convert_system_message_to_human=True)
         self.vectorstore = PGVector(
             connection=engine,
@@ -36,35 +39,19 @@ class RecipeUploader:
         )
 
     def _extract_recipes_from_chunk(self, chunk: str) -> list[dict]:
-        prompt = (
-            "The following text contains one or more cooking recipes.\n"
-            "Extract the recipes in JSON format using the following schema:\n"
-            "[\n"
-            "  {\n"
-            "    \"title\": \"Recipe name\",\n"
-            "    \"ingredients\": [\"ingredient 1\", \"ingredient 2\", ...],\n"
-            "    \"content\": \"Full received text in \'Text:\'\"\n"
-            "  },\n"
-            "  ...\n"
-            "]\n\n"
-            "Text:\n"
-            f"{chunk}\n\n"
-            "Respond only with a valid JSON, without explanations, without additional text, without Markdown formatting, and without labels. "
-            "ONLY the JSON. Do not include 'Answer:', triple quotes, or code blocks."
-        )
-
+        prompt = self.prompt_manager.get_extract_recipes_prompt(chunk)
         response = self.llm.invoke(prompt)
 
         try:
             return json.loads(response.content)
         except json.JSONDecodeError:
-            print("Error parsing JSON from the LLM in this chunk.")
-            print(f"{response.content}")
+            LOG.error("Error parsing JSON from the LLM in this chunk.")
+            LOG.error(f"{response.content}")
 
             try:
                 return extract_json_from_llm_output(response.content)
             except Exception as e:
-                print(f"Fallback also failed: {e}")
+                LOG.error(f"Fallback also failed: {e}")
                 return []
 
     def upload_document(self, pdf_path: str):
@@ -76,15 +63,15 @@ class RecipeUploader:
 
         all_documents = []
         for idx, chunk in enumerate(chunks):
-            print(f"Processing chunk {idx + 1}/{len(chunks)}")
+            LOG.debug(f"Processing chunk {idx + 1}/{len(chunks)}")
             recipes = self._extract_recipes_from_chunk(chunk)
             for rid, recipe in enumerate(recipes):
                 doc = Document(
                     page_content=recipe["content"],
-                    metadata={"title": recipe["title"]},
+                    metadata={"title": recipe["title"], "ingredients": recipe["ingredients"]},
                 )
                 all_documents.append((doc, f"chunk{idx}_recipe{rid}"))
 
-        print(f"Extracted {len(all_documents)} recipes. Saving to vectorstore...")
+        LOG.debug(f"Extracted {len(all_documents)} recipes. Saving to vectorstore...")
         docs, ids = zip(*all_documents)
         self.vectorstore.add_documents(documents=list(docs), ids=list(ids))
