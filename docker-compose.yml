@@ -35,3 +35,5 @@ services:
       container_name: java-api
       ports:
         - "8080:8080"
+      expose:
+        - "8080"

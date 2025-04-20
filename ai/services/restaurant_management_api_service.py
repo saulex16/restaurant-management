@@ -5,16 +5,19 @@ from scheduler import scheduler
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 from httpx import TimeoutException, RequestError
+from logger import LOG
+
 
 class CircuitBreakerStatus(Enum):
     CLOSED = 1
     OPENED = 2
     HALF_OPENED = 3
 
+
 MAX_BACKOFF = 300
 
-class RestaurantManagementApiService:
 
+class RestaurantManagementApiService:
     def __init__(self, api_url: str, api_timeout: int, health_check_path: str, health_check_timeout: int):
         self.gateway = RestaurantManagementApiGateway(api_url, api_timeout)
         self.health_check_path = health_check_path
@@ -31,7 +34,8 @@ class RestaurantManagementApiService:
             self.health_check_timeout_backoff = self.health_check_timeout_backoff * 2
         else:
             self.health_check_timeout_backoff = self.health_check_timeout_init
-        timeout = max(self.health_check_timeout_backoff, MAX_BACKOFF)
+        timeout = min(self.health_check_timeout_backoff, MAX_BACKOFF)
+        LOG.debug("Scheduling health check in %s seconds", timeout)
         scheduler.add_job(self.execute_health_check, 'date',
                           run_date=datetime.now(timezone.utc) + timedelta(seconds=timeout))
 
@@ -49,12 +53,13 @@ class RestaurantManagementApiService:
             else:
                 self.circuit_breaker_status = CircuitBreakerStatus.OPENED
                 self.schedule_health_check()
-        except (TimeoutException, RequestError):
+        except (TimeoutException, RequestError) as e:
+            LOG.error("Health check failed with exception: %s", e)
             self.circuit_breaker_status = CircuitBreakerStatus.OPENED
             self.schedule_health_check()
         finally:
+            LOG.debug("Health check executed with status code: %s", self.circuit_breaker_status)
             self.is_health_check_scheduled = False
-
 
     async def handle_request(self, request: Callable[[], Awaitable[Response]]):
         exception = HTTPException(status_code=500, detail='Cannot connect to Restaurant Management API')
@@ -68,7 +73,6 @@ class RestaurantManagementApiService:
             self.schedule_health_check()
             self.circuit_breaker_status = CircuitBreakerStatus.OPENED
             raise exception
-
 
     # async def add_recept(self, recept_name: str, recept_ingredients: list[str]):
     #     # TODO: Chequear con la api de java los endpoint y que datos necesitan
@@ -89,5 +93,6 @@ class RestaurantManagementApiService:
                 raise HTTPException(status_code=500, detail='Cannot fetch the restaurant stocks')
             json = await response.json()
             return json
+
         # return ["pasta", "butter", "potatoes", "salt", "milk", "rice", "water"]
         return await self.handle_request(request)
