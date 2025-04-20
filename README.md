@@ -49,7 +49,9 @@ curl -X POST "http://localhost:8000/chat/" \
 ### Command
 Receive recipes that can be added to the menu given the current available ingredients in the warehouse.
 ```sh
-curl -X POST "http://localhost:8000/command/{RESTAURANT_ID}"
+curl -X POST "http://localhost:8000/command/{RESTAURANT_ID}" \
+    -H "Content-Type: application/json" \
+    -d '{"command": "Recipe recommendation"}'
 ```
 
 ---
