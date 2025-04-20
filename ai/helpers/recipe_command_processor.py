@@ -21,10 +21,7 @@ class RecipeCommandProcessor:
                                           convert_system_message_to_human=True)
         self.api_service = utils.create_restaurant_management_api_service()
 
-    async def send_command(self, restaurant_id: int, command: str):
-        if command.lower() != "listar recetas posibles":
-            print("Unrecognised command.")
-            return
+    async def send_command(self, restaurant_id: int):
 
         ingredients_stock = await self.api_service.get_stocks_by_id(restaurant_id)
         if not ingredients_stock:
