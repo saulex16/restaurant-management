@@ -10,6 +10,7 @@ from db.pgvector import engine
 
 import json
 
+from models.rag.prompts import PromptManager
 from utils import extract_json_from_llm_output
 
 
@@ -19,9 +20,10 @@ def generate_id(text: str) -> str:
 
 class RecipeUploader:
     def __init__(self):
+        self.prompt_manager = PromptManager()
+
         embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
         self.llm = ChatGoogleGenerativeAI(model="models/gemini-2.0-flash",
-                                          response_format="json",
                                           convert_system_message_to_human=True)
         self.vectorstore = PGVector(
             connection=engine,
@@ -36,23 +38,7 @@ class RecipeUploader:
         )
 
     def _extract_recipes_from_chunk(self, chunk: str) -> list[dict]:
-        prompt = (
-            "The following text contains one or more cooking recipes.\n"
-            "Extract the recipes in JSON format using the following schema:\n"
-            "[\n"
-            "  {\n"
-            "    \"title\": \"Recipe name\",\n"
-            "    \"ingredients\": [\"ingredient 1\", \"ingredient 2\", ...],\n"
-            "    \"content\": \"Full received text in \'Text:\'\"\n"
-            "  },\n"
-            "  ...\n"
-            "]\n\n"
-            "Text:\n"
-            f"{chunk}\n\n"
-            "Respond only with a valid JSON, without explanations, without additional text, without Markdown formatting, and without labels. "
-            "ONLY the JSON. Do not include 'Answer:', triple quotes, or code blocks."
-        )
-
+        prompt = self.prompt_manager.get_extract_recipes_prompt(chunk)
         response = self.llm.invoke(prompt)
 
         try:

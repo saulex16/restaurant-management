@@ -26,4 +26,4 @@ class RecipeQuestionAnswerProcessor:
         )
 
     def ask_question(self, question: str):
-        return self.qa_chain({"query": question})
+        return self.qa_chain({"query": question})["result"]

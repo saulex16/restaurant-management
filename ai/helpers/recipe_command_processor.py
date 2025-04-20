@@ -5,11 +5,14 @@ from langchain_postgres import PGVector
 
 import utils
 from db.pgvector import engine
+from models.rag.prompts import PromptManager
 
 
 class RecipeCommandProcessor:
 
     def __init__(self):
+        self.prompt_manager = PromptManager()
+
         embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
         self.vectorstore = PGVector(
             connection=engine,
@@ -17,7 +20,6 @@ class RecipeCommandProcessor:
             collection_name="recipes",
         )
         self.llm = ChatGoogleGenerativeAI(model="models/gemini-2.0-flash",
-                                          response_format="json",
                                           convert_system_message_to_human=True)
         self.api_service = utils.create_restaurant_management_api_service()
 
@@ -49,17 +51,10 @@ class RecipeCommandProcessor:
                 "ingredients": metadata.get("ingredients", [])
             })
 
-        prompt = (
-            "Given the following list of available ingredients:\n"
-            f"{ingredients_stock}\n\n"
-            "And the following list of recipes with their required ingredients:\n"
-            f"{json.dumps(recipes, indent=2)}\n\n"
-            "List which recipes can be prepared with the current stock. "
-            "Return only a JSON list of recipe titles like:\n"
-            "[\"Garlic Bread\", \"Tomato Salad\"]\n\n"
-            "ONLY the JSON. No Markdown, no explanations, no extra text."
+        prompt = self.prompt_manager.get_recipe_recommendation_prompt(
+            ingredients=ingredients_stock,
+            recipes=recipes
         )
-
         response = self.llm.invoke(prompt)
 
         try:

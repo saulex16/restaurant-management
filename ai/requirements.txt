@@ -12,4 +12,5 @@ python-dotenv
 apscheduler
 httpx
 pypdf
+jinja2
 pytest

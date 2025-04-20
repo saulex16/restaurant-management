@@ -41,8 +41,8 @@ async def upload_file(file: UploadFile = File(...), service: RagService = Depend
         tmp.write(contents)
         tmp_path = tmp.name
 
-    result = service.upload_document(tmp_path)
-    return {"message": "Upload successful", "details": result}
+    service.upload_document(tmp_path)
+    return {"message": "Upload successful"}
 
 
 @app.post("/chat/")
