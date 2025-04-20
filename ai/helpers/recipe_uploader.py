@@ -10,6 +10,7 @@ from db.pgvector import engine
 
 import json
 
+from logger import LOG
 from models.rag.prompts import PromptManager
 from utils import extract_json_from_llm_output
 
@@ -44,13 +45,13 @@ class RecipeUploader:
         try:
             return json.loads(response.content)
         except json.JSONDecodeError:
-            print("Error parsing JSON from the LLM in this chunk.")
-            print(f"{response.content}")
+            LOG.error("Error parsing JSON from the LLM in this chunk.")
+            LOG.error(f"{response.content}")
 
             try:
                 return extract_json_from_llm_output(response.content)
             except Exception as e:
-                print(f"Fallback also failed: {e}")
+                LOG.error(f"Fallback also failed: {e}")
                 return []
 
     def upload_document(self, pdf_path: str):
@@ -62,7 +63,7 @@ class RecipeUploader:
 
         all_documents = []
         for idx, chunk in enumerate(chunks):
-            print(f"Processing chunk {idx + 1}/{len(chunks)}")
+            LOG.debug(f"Processing chunk {idx + 1}/{len(chunks)}")
             recipes = self._extract_recipes_from_chunk(chunk)
             for rid, recipe in enumerate(recipes):
                 doc = Document(
@@ -71,6 +72,6 @@ class RecipeUploader:
                 )
                 all_documents.append((doc, f"chunk{idx}_recipe{rid}"))
 
-        print(f"Extracted {len(all_documents)} recipes. Saving to vectorstore...")
+        LOG.debug(f"Extracted {len(all_documents)} recipes. Saving to vectorstore...")
         docs, ids = zip(*all_documents)
         self.vectorstore.add_documents(documents=list(docs), ids=list(ids))
