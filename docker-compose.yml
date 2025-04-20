@@ -1,0 +1,41 @@
+
+services:
+  pgvector-db:
+    image: ankane/pgvector
+    container_name: pgvector-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: vector_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d vector_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  fastapi-api:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    container_name: fastapi-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      pgvector-db:
+        condition: service_healthy
+    env_file:
+      - ai/.env
+    expose:
+      - "8000"
+
+  java-api:
+      build:
+        context: ./api
+        dockerfile: Dockerfile
+      container_name: java-api
+      ports:
+        - "8080:8080"
+      expose:
+        - "8080"
