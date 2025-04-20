@@ -13,13 +13,13 @@ public class WarehouseDto {
 
     private List<Long> stock;
 
-    private Restaurant restaurant;
+    private Long restaurant;
 
     public static WarehouseDto fromWarehouse(Warehouse warehouse){
         List<Long> stockIds = warehouse.getStock().stream().map(Stock::getId).toList();
         WarehouseDto dto = new WarehouseDto();
         dto.setId(warehouse.getId());
-        dto.setRestaurant(warehouse.getRestaurant());
+        dto.setRestaurant(warehouse.getRestaurant().getId());
         dto.setStock(stockIds);
 
         return dto;
@@ -41,11 +41,11 @@ public class WarehouseDto {
         this.stock = stock;
     }
 
-    public Restaurant getRestaurant() {
+    public long getRestaurant() {
         return restaurant;
     }
 
-    public void setRestaurant(Restaurant restaurant) {
+    public void setRestaurant(long restaurant) {
         this.restaurant = restaurant;
     }
 }
