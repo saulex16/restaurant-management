@@ -4,7 +4,8 @@ This project was developed as part of the **Application or use cases of various 
 
 ## Set-up
 Requirements:
-- Docker Engine  
+- Docker Engine
+- cURL  
 
 
 ### Docker Compose
@@ -18,7 +19,7 @@ In a terminal, run the following command:
 docker compose up --build -d
 ```
 
-**Make sure the port 8080 is opened in your computer**
+**Make sure the ports 8000 and 8080 are opened in your computer**
 
 ### Populate the Restaurant Management API
 The _populate\_api.sh_ file creates a restaurant and some ingredients with stock.  
