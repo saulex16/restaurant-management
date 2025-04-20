@@ -30,7 +30,11 @@ public class WarehouseRepositoryImpl implements WarehouseRepository {
         Warehouse warehouse = new Warehouse();
         warehouse.setRestaurant(restaurant);
         warehouse.setStock(new ArrayList<>());
+
+        restaurant.setWarehouse(warehouse);
+
         entityManager.persist(warehouse);
+        entityManager.persist(restaurant);
 
         return warehouse;
     }
@@ -44,18 +48,18 @@ public class WarehouseRepositoryImpl implements WarehouseRepository {
         return Optional.ofNullable(query.getSingleResult());
     }
 
-    @Override
+    @Transactional
     public Stock createStockForWarehouse(Ingredient ingredient, Long quantity, Long warehouseId) {
-        Optional<Warehouse> maybeWarehouse = Optional.ofNullable(entityManager.find(Warehouse.class, warehouseId));
-        if(maybeWarehouse.isEmpty()) {
+        Warehouse warehouse = entityManager.find(Warehouse.class, warehouseId);
+        if (warehouse == null) {
             throw new IllegalArgumentException("Warehouse with ID " + warehouseId + " not found");
         }
 
-        Warehouse warehouse = maybeWarehouse.get();
-        Stock stock = new Stock(ingredient,quantity);
-
+        Stock stock = new Stock(ingredient, quantity);
+        stock.setWarehouse(warehouse);
         warehouse.getStock().add(stock);
-        entityManager.persist(warehouse);
+
+        entityManager.persist(stock);
 
         return stock;
     }
