@@ -27,6 +27,7 @@ public class WarehouseRepositoryImpl implements WarehouseRepository {
 
     @Override
     public Warehouse createWarehouse(Restaurant restaurant) {
+        entityManager.merge(restaurant);
         Warehouse warehouse = new Warehouse();
         warehouse.setRestaurant(restaurant);
         warehouse.setStock(new ArrayList<>());
